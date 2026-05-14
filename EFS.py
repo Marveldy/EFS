@@ -4,10 +4,9 @@ from flask_frozen import Freezer
 app = Flask(__name__)
 freezer = Freezer(app)
 
-# 告诉 Frozen-Flask 需要抓取哪些页面（后续添加新页面时在这里补充）
 @freezer.register_generator
 def all_pages():
-    yield '/'          # 首页
+    yield '/'
 
 @app.route('/')
 def home():
@@ -18,6 +17,18 @@ def home():
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Terra Group | 泰拉集团</title>
+
+    <!-- ========== Favicon 图标 ========== -->
+    <!-- 标准浏览器标签页图标 -->
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <!-- 推荐也提供一个 PNG 版本，兼容性更好 -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+    <!-- iOS 主屏幕图标 -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+    <!-- Android Chrome 图标 -->
+    <link rel="manifest" href="/static/site.webmanifest">
+
     <style>
         /* 定义本地 Versa 字体 */
         @font-face {
@@ -441,5 +452,4 @@ def home():
     '''
 
 if __name__ == '__main__':
-    # 本地开发时直接运行 Flask 服务器
     app.run(host='0.0.0.0', port=5000, debug=True)
