@@ -6,9 +6,10 @@ freezer = Freezer(app)
 
 @freezer.register_generator
 def all_pages():
-    yield '/'          # 首页
-    yield '/about/'    # 关于我们
-    yield '/careers/'  # 招贤纳士（新增）
+    yield '/'
+    yield '/about/'
+    yield '/careers/'
+    yield '/news/'       # 新闻中心
 
 @app.route('/')
 def home():
@@ -241,6 +242,31 @@ def home():
             background: rgba(0, 0, 0, 0.35);
             z-index: 1;
         }
+        /* 向下滚动箭头 */
+        .scroll-hint {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 40px;
+            color: rgba(255,255,255,0.8);
+            text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            z-index: 2;
+            animation: bounce 2s infinite;
+            cursor: default;
+            user-select: none;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            40% {
+                transform: translateX(-50%) translateY(-15px);
+            }
+            60% {
+                transform: translateX(-50%) translateY(-8px);
+            }
+        }
         .hero h1 {
             font-size: clamp(48px, 10vw, 90px); font-weight: 800;
             letter-spacing: 8px;
@@ -277,28 +303,102 @@ def home():
             border-color: #00b4d8;
             color: #00b4d8;
         }
-        /* 业务卡片 */
-        .cards {
-            display: flex; gap: 32px; flex-wrap: wrap;
-            justify-content: center; margin-top: 60px;
+        /* 英文副标题 */
+        .about-subtitle {
+            text-align: center;
+            font-size: 18px;
+            color: #a0a8b5;
+            font-family: 'Helvetica Neue', 'Arial', sans-serif;
+            font-weight: 500;
+            letter-spacing: 2px;
+            margin-bottom: 0;
         }
-        .card {
-            background: #ffffff; border: 1px solid #dce3eb;
-            border-radius: 16px; padding: 40px 28px; flex: 1;
-            min-width: 260px; max-width: 340px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.04);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 16px 40px rgba(0,102,204,0.12);
-        }
-        .card-icon { font-size: 42px; margin-bottom: 20px; }
-        .card h3 {
-            font-size: 24px; font-weight: 600; margin-bottom: 12px;
+        /* 中文主标题 */
+        .about-title {
+            text-align: center;
+            font-size: 56px;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+            font-weight: 700;
             color: #0b2b44;
         }
-        .card p { color: #5e6f82; font-size: 15px; }
+        /* “走进泰拉” 板块样式 */
+        .about-box {
+            display: flex;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 12px 36px rgba(0,0,0,0.08);
+            overflow: hidden;
+            margin-top: 40px;
+            min-height: 380px;
+        }
+        .about-img {
+            width: 48%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .about-content {
+            padding: 56px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .about-content p {
+            font-size: 17px;
+            color: #4a5c6c;
+            line-height: 1.8;
+            margin-bottom: 28px;
+        }
+        /* 按钮 */
+        .more-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #0066cc;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 14px 28px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            align-self: flex-start;
+            height: 52px;
+            box-sizing: border-box;
+        }
+        .more-btn .arrow-icon {
+            font-size: 30px;
+            font-weight: 900;
+            line-height: 1;
+            transition: transform 0.3s ease, margin 0.3s ease;
+            order: 0;
+            margin-top: -6px;
+        }
+        .more-btn .btn-text {
+            max-width: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            transition: max-width 0.4s ease, margin 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+            margin-left: 0;
+            order: 1;
+        }
+        .more-btn:hover .btn-text {
+            max-width: 120px;
+            opacity: 1;
+            margin-left: 10px;
+        }
+        .more-btn:hover .arrow-icon {
+            order: 1;
+            margin-left: 0;
+            margin-top: -6px;
+        }
+        .more-btn:hover .btn-text {
+            order: 0;
+        }
         /* 新闻动态 */
         .news-list {
             display: flex; flex-direction: column; gap: 24px;
@@ -345,8 +445,8 @@ def home():
             <div class="nav-links">
                 <a href="/">产品与服务</a>
                 <a href="/about/">关于我们</a>
-                <a href="#">新闻中心</a>
-                <a href="/careers/">招贤纳士</a>   <!-- 新增链接 -->
+                <a href="/news/">新闻中心</a>   <!-- 更新链接 -->
+                <a href="/careers/">招贤纳士</a>
                 <a href="#">联系我们</a>
             </div>
         </div>
@@ -361,32 +461,30 @@ def home():
         <h1>TERRAGROUP</h1>
         <p class="tagline">Virtus in Scientia</p>
         <span class="btn">探索我们的研究</span>
+        <div class="scroll-hint">↓</div>
     </div>
 
-    <div class="section">
-        <h2 style="text-align:center; font-size:36px; letter-spacing:4px; margin-bottom:12px;">核心业务</h2>
-        <p style="text-align:center; color:#5e6f82; max-width:600px; margin:0 auto 40px;">
-            泰拉集团在120多个国家开展业务，致力于通过科学技术推动人类进步。
-        </p>
-        <div class="cards">
-            <div class="card">
-                <div class="card-icon">🌾</div>
-                <h3>农业生物技术</h3>
-                <p>开发适应极端气候的作物基因，保障全球粮食安全。我们在诺文斯克地区的试验田已取得突破性进展。</p>
-            </div>
-            <div class="card">
-                <div class="card-icon">🧪</div>
-                <h3>前沿科技研究</h3>
-                <p>超导材料、量子通信、神经接口……我们的实验室永远走在已知与未知的边界。</p>
-            </div>
-            <div class="card">
-                <div class="card-icon">🏗️</div>
-                <h3>全球基础设施</h3>
-                <p>承包港口、电站、物流网络建设，为新兴经济特区提供全套解决方案。</p>
+    <!-- 走进泰拉板块 -->
+    <div class="section" style="max-width: 1400px;">
+        <p class="about-subtitle">ABOUT TERRAGROUP</p>
+        <h2 class="about-title">走进泰拉</h2>
+        <div class="about-box">
+            <img src="/static/about-preview.jpg" alt="走进泰拉" class="about-img">
+            <div class="about-content">
+                <p>
+                    泰拉集团（Terra Group）成立于1998年，总部位于英国，是一家业务遍及全球120多个国家的跨国巨头。
+                    我们以“Virtus in Scientia”（潜心科研）为核心理念，专注农业生物技术、前沿科技研究与全球基础设施建设。
+                    集团旗下拥有40余家大型企业，从诺文斯克到刚果，我们以科学的力量重塑未来。
+                </p>
+                <a href="/about/" class="more-btn">
+                    <span class="arrow-icon">→</span>
+                    <span class="btn-text">了解更多</span>
+                </a>
             </div>
         </div>
     </div>
 
+    <!-- 新闻动态 -->
     <div class="section">
         <h2 style="font-size:32px; letter-spacing:3px;">新闻动态</h2>
         <div class="news-list">
@@ -475,19 +573,7 @@ def about():
             z-index: 1000;
             border-bottom: 1px solid #e0e7ef;
             background: rgba(255,255,255,0.95);
-        }
-        .nav-top {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 14px 60px;
-            background: transparent;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
-        }
-        .nav-logo {
-            height: 44px;
-            width: auto;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
         }
         .nav-bottom {
             position: relative;
@@ -497,7 +583,6 @@ def about():
             padding: 18px 60px;
             background: transparent;
             backdrop-filter: blur(10px);
-            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
         }
         .bottom-logo {
             position: absolute;
@@ -506,6 +591,7 @@ def about():
             transform: translateY(-50%);
             height: 34px;
             width: auto;
+            display: block;
             z-index: 2;
         }
         .search-box {
@@ -561,7 +647,7 @@ def about():
         }
         .container {
             max-width: 1000px;
-            margin: 160px auto 80px;
+            margin: 120px auto 80px;
             padding: 0 40px;
         }
         h1 {
@@ -593,19 +679,18 @@ def about():
 </head>
 <body>
     <nav>
-        <div class="nav-top">
-            <img src="/static/terralogo.png" alt="Terra Group Logo" class="nav-logo">
-        </div>
         <div class="nav-bottom">
-            <img src="/static/terralogo.png" alt="Logo" class="bottom-logo">
+            <a href="/" class="bottom-logo-link">
+                <img src="/static/terralogo.png" alt="Logo" class="bottom-logo">
+            </a>
             <a href="#" class="search-box">
                 <span class="search-icon">🔍</span>
                 <span>搜索</span>
             </a>
             <div class="nav-links">
                 <a href="/">产品与服务</a>
-                <a href="/about/" style="color: #0066cc;">关于我们</a>   <!-- 当前页面高亮 -->
-                <a href="#">新闻中心</a>
+                <a href="/about/" style="color: #0066cc;">关于我们</a>
+                <a href="/news/">新闻中心</a>   <!-- 更新链接 -->
                 <a href="/careers/">招贤纳士</a>
                 <a href="#">联系我们</a>
             </div>
@@ -636,7 +721,6 @@ def about():
 </html>
     '''
 
-# 新增“招贤纳士”路由
 @app.route('/careers/')
 def careers():
     return '''
@@ -663,19 +747,7 @@ def careers():
             z-index: 1000;
             border-bottom: 1px solid #e0e7ef;
             background: rgba(255,255,255,0.95);
-        }
-        .nav-top {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 14px 60px;
-            background: transparent;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
-        }
-        .nav-logo {
-            height: 44px;
-            width: auto;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
         }
         .nav-bottom {
             position: relative;
@@ -685,7 +757,6 @@ def careers():
             padding: 18px 60px;
             background: transparent;
             backdrop-filter: blur(10px);
-            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
         }
         .bottom-logo {
             position: absolute;
@@ -694,6 +765,7 @@ def careers():
             transform: translateY(-50%);
             height: 34px;
             width: auto;
+            display: block;
             z-index: 2;
         }
         .search-box {
@@ -749,7 +821,7 @@ def careers():
         }
         .container {
             max-width: 1000px;
-            margin: 160px auto 80px;
+            margin: 120px auto 80px;
             padding: 0 40px;
         }
         h1 {
@@ -803,11 +875,10 @@ def careers():
 </head>
 <body>
     <nav>
-        <div class="nav-top">
-            <img src="/static/terralogo.png" alt="Terra Group Logo" class="nav-logo">
-        </div>
         <div class="nav-bottom">
-            <img src="/static/terralogo.png" alt="Logo" class="bottom-logo">
+            <a href="/" class="bottom-logo-link">
+                <img src="/static/terralogo.png" alt="Logo" class="bottom-logo">
+            </a>
             <a href="#" class="search-box">
                 <span class="search-icon">🔍</span>
                 <span>搜索</span>
@@ -815,8 +886,8 @@ def careers():
             <div class="nav-links">
                 <a href="/">产品与服务</a>
                 <a href="/about/">关于我们</a>
-                <a href="#">新闻中心</a>
-                <a href="/careers/" style="color: #0066cc;">招贤纳士</a>   <!-- 当前页面高亮 -->
+                <a href="/news/">新闻中心</a>   <!-- 更新链接 -->
+                <a href="/careers/" style="color: #0066cc;">招贤纳士</a>
                 <a href="#">联系我们</a>
             </div>
         </div>
@@ -848,6 +919,224 @@ def careers():
         </div>
 
         <p>
+            <a href="/">← 返回首页</a>
+        </p>
+    </div>
+
+    <footer>
+        <p>© 2026 Terra Group International. All rights reserved.</p>
+    </footer>
+</body>
+</html>
+    '''
+
+# 新增新闻中心路由
+@app.route('/news/')
+def news():
+    return '''
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新闻中心 | Terra Group</title>
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #f4f7fb;
+            color: #1a2a3a;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+        }
+        nav {
+            position: fixed; top: 0; width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid #e0e7ef;
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+        .nav-bottom {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 18px 60px;
+            background: transparent;
+            backdrop-filter: blur(10px);
+        }
+        .bottom-logo {
+            position: absolute;
+            left: 60px;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 34px;
+            width: auto;
+            display: block;
+            z-index: 2;
+        }
+        .search-box {
+            position: absolute;
+            right: 60px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 280px;
+            padding: 7px 18px;
+            border: 1px solid #b0bec5;
+            border-radius: 24px;
+            background: #ffffff;
+            cursor: pointer;
+            text-decoration: none;
+            z-index: 2;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .search-box:hover {
+            border-color: #0066cc;
+        }
+        .search-box .search-icon {
+            font-size: 18px;
+            color: #0066cc;
+        }
+        .search-box span {
+            font-size: 16px;
+            color: #5e6f82;
+        }
+        .nav-links {
+            display: flex;
+            gap: 0;
+            align-items: center;
+        }
+        .nav-links a {
+            color: #4a5c6c;
+            text-decoration: none;
+            font-size: 17px;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover {
+            color: #0066cc;
+        }
+        .nav-links a:not(:last-child)::after {
+            content: "|";
+            margin-left: 28px;
+            margin-right: 28px;
+            color: #b0bec5;
+            opacity: 0.6;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 120px auto 80px;
+            padding: 0 40px;
+        }
+        h1 {
+            font-size: 48px;
+            font-weight: 700;
+            color: #0b2b44;
+            margin-bottom: 24px;
+            border-bottom: 4px solid #0077b6;
+            display: inline-block;
+            padding-bottom: 8px;
+        }
+        .news-list {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            margin-top: 40px;
+        }
+        .news-item {
+            border-left: 4px solid #0077b6;
+            padding-left: 28px;
+            background: #fff;
+            padding: 24px 28px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            transition: border-color 0.3s;
+        }
+        .news-item:hover { border-left-color: #00b4d8; }
+        .news-date {
+            font-size: 13px;
+            color: #8393a5;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+        }
+        .news-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #0b2b44;
+        }
+        .news-desc {
+            font-size: 15px;
+            color: #4a5c6c;
+            margin-top: 8px;
+        }
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid #dce3eb;
+            background: #fff;
+        }
+        footer p {
+            color: #8393a5;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-bottom">
+            <a href="/" class="bottom-logo-link">
+                <img src="/static/terralogo.png" alt="Logo" class="bottom-logo">
+            </a>
+            <a href="#" class="search-box">
+                <span class="search-icon">🔍</span>
+                <span>搜索</span>
+            </a>
+            <div class="nav-links">
+                <a href="/">产品与服务</a>
+                <a href="/about/">关于我们</a>
+                <a href="/news/" style="color: #0066cc;">新闻中心</a>   <!-- 当前高亮 -->
+                <a href="/careers/">招贤纳士</a>
+                <a href="#">联系我们</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>新闻中心</h1>
+        <p style="font-size: 18px; color: #4a5c6c; line-height: 1.8; margin-bottom: 40px;">
+            了解泰拉集团在全球的最新动态、研究成果与战略合作。
+        </p>
+
+        <div class="news-list">
+            <div class="news-item">
+                <div class="news-date">2025.10.12</div>
+                <div class="news-title">Terra Group Labs 在诺文斯克新建三级生物实验室</div>
+                <div class="news-desc">该实验室将专注于传染病学研究，进一步强化集团在全球公共卫生领域的领导地位。</div>
+            </div>
+            <div class="news-item">
+                <div class="news-date">2025.09.28</div>
+                <div class="news-title">集团与 USEC 国际安保续签战略合作协议</div>
+                <div class="news-desc">USEC 将继续为泰拉集团在全球的资产及人员提供安全保障服务。</div>
+            </div>
+            <div class="news-item">
+                <div class="news-date">2025.08.15</div>
+                <div class="news-title">刚果（金）矿业项目顺利投产</div>
+                <div class="news-desc">该矿区的稀土与铀矿开采将为清洁能源与医疗同位素供应提供关键原料。</div>
+            </div>
+            <div class="news-item">
+                <div class="news-date">2025.07.02</div>
+                <div class="news-title">泰拉集团发布2025年度可持续发展报告</div>
+                <div class="news-desc">报告强调了集团在环境保护、社区共建及科研伦理方面的承诺与进展。</div>
+            </div>
+        </div>
+
+        <p style="margin-top: 40px;">
             <a href="/">← 返回首页</a>
         </p>
     </div>
