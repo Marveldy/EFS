@@ -6,7 +6,8 @@ freezer = Freezer(app)
 
 @freezer.register_generator
 def all_pages():
-    yield '/'
+    yield '/'          # 首页
+    yield '/about/'    # 新增：“关于我们”子页面
 
 @app.route('/')
 def home():
@@ -17,18 +18,10 @@ def home():
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Terra Group | 泰拉集团</title>
-
-    <!-- ========== Favicon 图标 ========== -->
-    <!-- 标准浏览器标签页图标 -->
     <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
-    <!-- 推荐也提供一个 PNG 版本，兼容性更好 -->
     <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
-    <!-- iOS 主屏幕图标 -->
     <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
-    <!-- Android Chrome 图标 -->
-    <link rel="manifest" href="/static/site.webmanifest">
-
     <style>
         /* 定义本地 Versa 字体 */
         @font-face {
@@ -349,8 +342,8 @@ def home():
                 <span>搜索</span>
             </a>
             <div class="nav-links">
-                <a href="#">产品与服务</a>
-                <a href="#">关于我们</a>
+                <a href="/">产品与服务</a>
+                <a href="/about">关于我们</a>   <!-- 指向 /about -->
                 <a href="#">新闻中心</a>
                 <a href="#">招贤纳士</a>
                 <a href="#">联系我们</a>
@@ -426,10 +419,14 @@ def home():
 
         function updateHeroPadding() {
             const navHeight = nav.offsetHeight;
-            hero.style.paddingTop = navHeight + 'px';
+            if (hero) {
+                hero.style.paddingTop = navHeight + 'px';
+            }
         }
-        updateHeroPadding();
-        window.addEventListener('resize', updateHeroPadding);
+        if (hero) {
+            updateHeroPadding();
+            window.addEventListener('resize', updateHeroPadding);
+        }
 
         function handleScroll() {
             const scrollY = window.scrollY;
@@ -447,6 +444,194 @@ def home():
             console.log('搜索功能暂未开放');
         });
     </script>
+</body>
+</html>
+    '''
+
+# 新增加的子页面路由：“关于我们”
+@app.route('/about')
+def about():
+    return '''
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于我们 | Terra Group</title>
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #f4f7fb;
+            color: #1a2a3a;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+        }
+        nav {
+            position: fixed; top: 0; width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid #e0e7ef;
+            background: rgba(255,255,255,0.95);
+        }
+        .nav-top {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 14px 60px;
+            background: transparent;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+        .nav-logo {
+            height: 44px;
+            width: auto;
+        }
+        .nav-bottom {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 18px 60px;
+            background: transparent;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+        .bottom-logo {
+            position: absolute;
+            left: 60px;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 34px;
+            width: auto;
+            z-index: 2;
+        }
+        .search-box {
+            position: absolute;
+            right: 60px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 280px;
+            padding: 7px 18px;
+            border: 1px solid #b0bec5;
+            border-radius: 24px;
+            background: #ffffff;
+            cursor: pointer;
+            text-decoration: none;
+            z-index: 2;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .search-box:hover {
+            border-color: #0066cc;
+        }
+        .search-box .search-icon {
+            font-size: 18px;
+            color: #0066cc;
+        }
+        .search-box span {
+            font-size: 16px;
+            color: #5e6f82;
+        }
+        .nav-links {
+            display: flex;
+            gap: 0;
+            align-items: center;
+        }
+        .nav-links a {
+            color: #4a5c6c;
+            text-decoration: none;
+            font-size: 17px;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover {
+            color: #0066cc;
+        }
+        .nav-links a:not(:last-child)::after {
+            content: "|";
+            margin-left: 28px;
+            margin-right: 28px;
+            color: #b0bec5;
+            opacity: 0.6;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 160px auto 80px;
+            padding: 0 40px;
+        }
+        h1 {
+            font-size: 48px;
+            font-weight: 700;
+            color: #0b2b44;
+            margin-bottom: 24px;
+            border-bottom: 4px solid #0077b6;
+            display: inline-block;
+            padding-bottom: 8px;
+        }
+        p {
+            font-size: 18px;
+            color: #4a5c6c;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid #dce3eb;
+            background: #fff;
+        }
+        footer p {
+            color: #8393a5;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-top">
+            <img src="/static/terralogo.png" alt="Terra Group Logo" class="nav-logo">
+        </div>
+        <div class="nav-bottom">
+            <img src="/static/terralogo.png" alt="Logo" class="bottom-logo">
+            <a href="#" class="search-box">
+                <span class="search-icon">🔍</span>
+                <span>搜索</span>
+            </a>
+            <div class="nav-links">
+                <a href="/">产品与服务</a>
+                <a href="/about" style="color: #0066cc;">关于我们</a>   <!-- 当前页面高亮 -->
+                <a href="#">新闻中心</a>
+                <a href="#">招贤纳士</a>
+                <a href="#">联系我们</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>关于 Terra Group</h1>
+        <p>
+            泰拉集团国际控股公司 (Terra Group International) 是一家业务遍及全球超过120个国家的跨国巨头，
+            旗下拥有超过40家大型企业。集团官方宣称主要业务为农业与生物技术研究，但实际上其影响力横跨
+            军事、政治、前沿科学、金融、采矿等多个领域。
+        </p>
+        <p>
+            我们的座右铭是 <strong>Virtus in Scientia</strong>（潜心科研）。在诺文斯克经济特区，
+            泰拉集团承包了大量的基础设施建设，并在此地开展了诸多尖端科技项目。然而，诸多迹象表明，
+            集团与当地的私人武装、联合国维和部队甚至神秘主义势力有着千丝万缕的联系……
+        </p>
+        <p>
+            <a href="/">← 返回首页</a>
+        </p>
+    </div>
+
+    <footer>
+        <p>© 2026 Terra Group International. All rights reserved.</p>
+    </footer>
 </body>
 </html>
     '''
