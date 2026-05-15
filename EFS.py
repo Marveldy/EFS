@@ -7,7 +7,7 @@ freezer = Freezer(app)
 @freezer.register_generator
 def all_pages():
     yield '/'          # 首页
-    yield '/about/'    # 新增：“关于我们”子页面
+    yield '/about/'    # “关于我们”子页面（注意结尾的斜杠）
 
 @app.route('/')
 def home():
@@ -343,7 +343,7 @@ def home():
             </a>
             <div class="nav-links">
                 <a href="/">产品与服务</a>
-                <a href="/about">关于我们</a>   <!-- 指向 /about -->
+                <a href="/about/">关于我们</a>   <!-- 注意结尾斜杠 -->
                 <a href="#">新闻中心</a>
                 <a href="#">招贤纳士</a>
                 <a href="#">联系我们</a>
@@ -448,8 +448,8 @@ def home():
 </html>
     '''
 
-# 新增加的子页面路由：“关于我们”
-@app.route('/about')
+# 注意：路由统一使用结尾斜杠
+@app.route('/about/')
 def about():
     return '''
 <!DOCTYPE html>
@@ -604,7 +604,7 @@ def about():
             </a>
             <div class="nav-links">
                 <a href="/">产品与服务</a>
-                <a href="/about" style="color: #0066cc;">关于我们</a>   <!-- 当前页面高亮 -->
+                <a href="/about/" style="color: #0066cc;">关于我们</a>   <!-- 当前页面高亮，注意结尾斜杠 -->
                 <a href="#">新闻中心</a>
                 <a href="#">招贤纳士</a>
                 <a href="#">联系我们</a>
