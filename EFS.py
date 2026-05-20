@@ -12,6 +12,11 @@ def all_pages():
     yield '/news/'
     yield '/products/'
     yield '/contact/'
+    # 新闻详情页
+    yield '/news/2025-10-12/'
+    yield '/news/2025-09-28/'
+    yield '/news/2025-08-15/'
+    yield '/news/2025-07-02/'
 
 @app.route('/')
 def home():
@@ -420,6 +425,13 @@ def home():
         .news-title {
             font-size: 20px; font-weight: 600; color: #0b2b44;
         }
+        .news-title a {
+            text-decoration: none;
+            color: inherit;
+        }
+        .news-title a:hover {
+            color: #0066cc;
+        }
         .news-desc {
             font-size: 15px; color: #4a5c6c; margin-top: 8px;
         }
@@ -492,17 +504,17 @@ def home():
         <div class="news-list">
             <div class="news-item">
                 <div class="news-date">2025.10.12</div>
-                <div class="news-title">Terra Group Labs 在诺文斯克新建三级生物实验室</div>
+                <div class="news-title"><a href="/news/2025-10-12/">Terra Group Labs 在诺文斯克新建三级生物实验室</a></div>
                 <div class="news-desc">该实验室将专注于传染病学研究，进一步强化集团在全球公共卫生领域的领导地位。</div>
             </div>
             <div class="news-item">
                 <div class="news-date">2025.09.28</div>
-                <div class="news-title">集团与 USEC 国际安保续签战略合作协议</div>
+                <div class="news-title"><a href="/news/2025-09-28/">集团与 USEC 国际安保续签战略合作协议</a></div>
                 <div class="news-desc">USEC 将继续为泰拉集团在全球的资产及人员提供安全保障服务。</div>
             </div>
             <div class="news-item">
                 <div class="news-date">2025.08.15</div>
-                <div class="news-title">刚果（金）矿业项目顺利投产</div>
+                <div class="news-title"><a href="/news/2025-08-15/">刚果（金）矿业项目顺利投产</a></div>
                 <div class="news-desc">该矿区的稀土与铀矿开采将为清洁能源与医疗同位素供应提供关键原料。</div>
             </div>
         </div>
@@ -1071,6 +1083,13 @@ def news():
             font-weight: 600;
             color: #0b2b44;
         }
+        .news-title a {
+            text-decoration: none;
+            color: inherit;
+        }
+        .news-title a:hover {
+            color: #0066cc;
+        }
         .news-desc {
             font-size: 15px;
             color: #4a5c6c;
@@ -1117,22 +1136,22 @@ def news():
         <div class="news-list">
             <div class="news-item">
                 <div class="news-date">2025.10.12</div>
-                <div class="news-title">Terra Group Labs 在诺文斯克新建三级生物实验室</div>
+                <div class="news-title"><a href="/news/2025-10-12/">Terra Group Labs 在诺文斯克新建三级生物实验室</a></div>
                 <div class="news-desc">该实验室将专注于传染病学研究，进一步强化集团在全球公共卫生领域的领导地位。</div>
             </div>
             <div class="news-item">
                 <div class="news-date">2025.09.28</div>
-                <div class="news-title">集团与 USEC 国际安保续签战略合作协议</div>
+                <div class="news-title"><a href="/news/2025-09-28/">集团与 USEC 国际安保续签战略合作协议</a></div>
                 <div class="news-desc">USEC 将继续为泰拉集团在全球的资产及人员提供安全保障服务。</div>
             </div>
             <div class="news-item">
                 <div class="news-date">2025.08.15</div>
-                <div class="news-title">刚果（金）矿业项目顺利投产</div>
+                <div class="news-title"><a href="/news/2025-08-15/">刚果（金）矿业项目顺利投产</a></div>
                 <div class="news-desc">该矿区的稀土与铀矿开采将为清洁能源与医疗同位素供应提供关键原料。</div>
             </div>
             <div class="news-item">
                 <div class="news-date">2025.07.02</div>
-                <div class="news-title">泰拉集团发布2025年度可持续发展报告</div>
+                <div class="news-title"><a href="/news/2025-07-02/">泰拉集团发布2025年度可持续发展报告</a></div>
                 <div class="news-desc">报告强调了集团在环境保护、社区共建及科研伦理方面的承诺与进展。</div>
             </div>
         </div>
@@ -1149,7 +1168,6 @@ def news():
 </html>
     '''
 
-# 新增“产品与服务”路由
 @app.route('/products/')
 def products():
     return '''
@@ -1382,7 +1400,6 @@ def products():
 </html>
     '''
 
-# 新增“联系我们”路由
 @app.route('/contact/')
 def contact():
     return '''
@@ -1623,6 +1640,519 @@ def contact():
 
         <p style="margin-top: 40px;">
             <a href="/">← 返回首页</a>
+        </p>
+    </div>
+
+    <footer>
+        <p>© 2026 Terra Group International. All rights reserved.</p>
+    </footer>
+</body>
+</html>
+    '''
+
+# ========== 新闻详情页路由 ==========
+
+@app.route('/news/2025-10-12/')
+def news_2025_10_12():
+    return '''
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terra Group Labs 在诺文斯克新建三级生物实验室 | 泰拉集团</title>
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #f4f7fb;
+            color: #1a2a3a;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+        }
+        nav {
+            position: fixed; top: 0; width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid #e0e7ef;
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+        .nav-bottom {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 18px 60px;
+            background: transparent;
+            backdrop-filter: blur(10px);
+        }
+        .bottom-logo {
+            position: absolute;
+            left: 60px;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 34px;
+            width: auto;
+            display: block;
+            z-index: 2;
+        }
+        .search-box {
+            position: absolute;
+            right: 60px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 280px;
+            padding: 7px 18px;
+            border: 1px solid #b0bec5;
+            border-radius: 24px;
+            background: #ffffff;
+            cursor: pointer;
+            text-decoration: none;
+            z-index: 2;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .search-box:hover { border-color: #0066cc; }
+        .search-box .search-icon { font-size: 18px; color: #0066cc; }
+        .search-box span { font-size: 16px; color: #5e6f82; }
+        .nav-links {
+            display: flex; gap: 0; align-items: center;
+        }
+        .nav-links a {
+            color: #4a5c6c; text-decoration: none;
+            font-size: 17px; font-weight: 600;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover { color: #0066cc; }
+        .nav-links a:not(:last-child)::after {
+            content: "|"; margin-left: 28px; margin-right: 28px;
+            color: #b0bec5; opacity: 0.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 120px auto 80px;
+            padding: 0 40px;
+        }
+        .article-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: #0b2b44;
+            margin-bottom: 12px;
+        }
+        .article-date {
+            font-size: 14px;
+            color: #8393a5;
+            margin-bottom: 24px;
+        }
+        .article-body {
+            font-size: 17px;
+            color: #4a5c6c;
+            line-height: 1.8;
+        }
+        .article-body p {
+            margin-bottom: 16px;
+        }
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid #dce3eb;
+            background: #fff;
+        }
+        footer p { color: #8393a5; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-bottom">
+            <a href="/" class="bottom-logo-link">
+                <img src="/static/terralogo.png" alt="Logo" class="bottom-logo">
+            </a>
+            <a href="#" class="search-box">
+                <span class="search-icon">🔍</span>
+                <span>搜索</span>
+            </a>
+            <div class="nav-links">
+                <a href="/products/">产品与服务</a>
+                <a href="/about/">关于我们</a>
+                <a href="/news/">新闻中心</a>
+                <a href="/careers/">招贤纳士</a>
+                <a href="/contact/">联系我们</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="article-title">Terra Group Labs 在诺文斯克新建三级生物实验室</h1>
+        <div class="article-date">2025年10月12日</div>
+        <div class="article-body">
+            <p>泰拉集团今日宣布，旗下核心研究机构 Terra Group Labs 已在诺文斯克经济特区内建成一座全新的三级生物安全实验室（BSL-3）。该实验室的落成标志着集团在传染病学研究领域迈入全新阶段，进一步巩固了其在全球公共卫生领域的领导地位。</p>
+            <p>新实验室配备最先进的空气过滤系统和负压隔离装置，能够安全处理高致病性病原体。首席科学官表示，该设施将重点开展新型疫苗研发和抗病毒药物筛选，首批研究项目已获得集团内部专项基金支持。</p>
+            <p>此次扩建也是泰拉集团对诺文斯克地区长期投资承诺的一部分，预计将创造超过200个高技能科研岗位。</p>
+        </div>
+        <p style="margin-top: 40px;">
+            <a href="/news/">← 返回新闻中心</a>
+        </p>
+    </div>
+
+    <footer>
+        <p>© 2026 Terra Group International. All rights reserved.</p>
+    </footer>
+</body>
+</html>
+    '''
+
+@app.route('/news/2025-09-28/')
+def news_2025_09_28():
+    return '''
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>集团与 USEC 国际安保续签战略合作协议 | 泰拉集团</title>
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #f4f7fb;
+            color: #1a2a3a;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+        }
+        nav {
+            position: fixed; top: 0; width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid #e0e7ef;
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+        .nav-bottom {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 18px 60px;
+            background: transparent;
+            backdrop-filter: blur(10px);
+        }
+        .bottom-logo {
+            position: absolute;
+            left: 60px; top: 50%; transform: translateY(-50%);
+            height: 34px; width: auto; display: block; z-index: 2;
+        }
+        .search-box {
+            position: absolute;
+            right: 60px; top: 50%; transform: translateY(-50%);
+            display: flex; align-items: center; gap: 8px;
+            width: 280px; padding: 7px 18px;
+            border: 1px solid #b0bec5; border-radius: 24px;
+            background: #ffffff; cursor: pointer; text-decoration: none;
+            z-index: 2; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .search-box:hover { border-color: #0066cc; }
+        .search-box .search-icon { font-size: 18px; color: #0066cc; }
+        .search-box span { font-size: 16px; color: #5e6f82; }
+        .nav-links {
+            display: flex; gap: 0; align-items: center;
+        }
+        .nav-links a {
+            color: #4a5c6c; text-decoration: none;
+            font-size: 17px; font-weight: 600;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover { color: #0066cc; }
+        .nav-links a:not(:last-child)::after {
+            content: "|"; margin-left: 28px; margin-right: 28px;
+            color: #b0bec5; opacity: 0.6;
+        }
+        .container {
+            max-width: 800px; margin: 120px auto 80px; padding: 0 40px;
+        }
+        .article-title {
+            font-size: 36px; font-weight: 700; color: #0b2b44; margin-bottom: 12px;
+        }
+        .article-date { font-size: 14px; color: #8393a5; margin-bottom: 24px; }
+        .article-body { font-size: 17px; color: #4a5c6c; line-height: 1.8; }
+        .article-body p { margin-bottom: 16px; }
+        footer {
+            text-align: center; padding: 40px 20px;
+            border-top: 1px solid #dce3eb; background: #fff;
+        }
+        footer p { color: #8393a5; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-bottom">
+            <a href="/" class="bottom-logo-link">
+                <img src="/static/terralogo.png" alt="Logo" class="bottom-logo">
+            </a>
+            <a href="#" class="search-box">
+                <span class="search-icon">🔍</span>
+                <span>搜索</span>
+            </a>
+            <div class="nav-links">
+                <a href="/products/">产品与服务</a>
+                <a href="/about/">关于我们</a>
+                <a href="/news/">新闻中心</a>
+                <a href="/careers/">招贤纳士</a>
+                <a href="/contact/">联系我们</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="article-title">集团与 USEC 国际安保续签战略合作协议</h1>
+        <div class="article-date">2025年9月28日</div>
+        <div class="article-body">
+            <p>泰拉集团今日宣布，已与全球知名私人安保承包商 USEC 成功续签为期五年的战略合作协议。根据协议，USEC 将继续为泰拉集团在全球高风险地区的资产、人员及关键基础设施提供全方位的安全保障服务。</p>
+            <p>此次续签扩大了合作范围，新增了诺文斯克经济特区的设施安保以及战略物资运输的护航服务。集团首席安全官表示，与 USEC 的长期合作是确保全球业务平稳运行的重要基石。</p>
+            <p>USEC 方面承诺将部署最新型的监控与快速反应系统，以应对日益复杂的国际安全环境。</p>
+        </div>
+        <p style="margin-top: 40px;">
+            <a href="/news/">← 返回新闻中心</a>
+        </p>
+    </div>
+
+    <footer>
+        <p>© 2026 Terra Group International. All rights reserved.</p>
+    </footer>
+</body>
+</html>
+    '''
+
+@app.route('/news/2025-08-15/')
+def news_2025_08_15():
+    return '''
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>刚果（金）矿业项目顺利投产 | 泰拉集团</title>
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #f4f7fb;
+            color: #1a2a3a;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+        }
+        nav {
+            position: fixed; top: 0; width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid #e0e7ef;
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+        .nav-bottom {
+            position: relative;
+            display: flex; justify-content: center; align-items: center;
+            padding: 18px 60px;
+            background: transparent; backdrop-filter: blur(10px);
+        }
+        .bottom-logo {
+            position: absolute; left: 60px; top: 50%; transform: translateY(-50%);
+            height: 34px; width: auto; display: block; z-index: 2;
+        }
+        .search-box {
+            position: absolute; right: 60px; top: 50%; transform: translateY(-50%);
+            display: flex; align-items: center; gap: 8px;
+            width: 280px; padding: 7px 18px;
+            border: 1px solid #b0bec5; border-radius: 24px;
+            background: #ffffff; cursor: pointer; text-decoration: none;
+            z-index: 2; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .search-box:hover { border-color: #0066cc; }
+        .search-box .search-icon { font-size: 18px; color: #0066cc; }
+        .search-box span { font-size: 16px; color: #5e6f82; }
+        .nav-links {
+            display: flex; gap: 0; align-items: center;
+        }
+        .nav-links a {
+            color: #4a5c6c; text-decoration: none;
+            font-size: 17px; font-weight: 600; transition: color 0.3s;
+        }
+        .nav-links a:hover { color: #0066cc; }
+        .nav-links a:not(:last-child)::after {
+            content: "|"; margin-left: 28px; margin-right: 28px;
+            color: #b0bec5; opacity: 0.6;
+        }
+        .container {
+            max-width: 800px; margin: 120px auto 80px; padding: 0 40px;
+        }
+        .article-title {
+            font-size: 36px; font-weight: 700; color: #0b2b44; margin-bottom: 12px;
+        }
+        .article-date { font-size: 14px; color: #8393a5; margin-bottom: 24px; }
+        .article-body { font-size: 17px; color: #4a5c6c; line-height: 1.8; }
+        .article-body p { margin-bottom: 16px; }
+        footer {
+            text-align: center; padding: 40px 20px;
+            border-top: 1px solid #dce3eb; background: #fff;
+        }
+        footer p { color: #8393a5; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-bottom">
+            <a href="/" class="bottom-logo-link">
+                <img src="/static/terralogo.png" alt="Logo" class="bottom-logo">
+            </a>
+            <a href="#" class="search-box">
+                <span class="search-icon">🔍</span>
+                <span>搜索</span>
+            </a>
+            <div class="nav-links">
+                <a href="/products/">产品与服务</a>
+                <a href="/about/">关于我们</a>
+                <a href="/news/">新闻中心</a>
+                <a href="/careers/">招贤纳士</a>
+                <a href="/contact/">联系我们</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="article-title">刚果（金）矿业项目顺利投产</h1>
+        <div class="article-date">2025年8月15日</div>
+        <div class="article-body">
+            <p>泰拉集团在刚果（金）的综合性矿业项目今日正式投产。该矿区富含稀土元素及高品位铀矿，是集团全球资源开发战略的重要组成部分。项目采用了最新环保选矿工艺，显著降低了对周边生态的影响。</p>
+            <p>投产后的矿区预计每年可提供数千吨稀土氧化物和数百吨铀精矿，不仅将为清洁能源与医疗同位素供应提供关键原料，还将为当地社区创造大量就业机会。集团表示，已与多家国际客户签订了长期供应协议。</p>
+            <p>此外，配套的基础设施升级工程也已同步完成，包括一条专用铁路线和现代化的矿区宿舍，进一步提升了运营效率。</p>
+        </div>
+        <p style="margin-top: 40px;">
+            <a href="/news/">← 返回新闻中心</a>
+        </p>
+    </div>
+
+    <footer>
+        <p>© 2026 Terra Group International. All rights reserved.</p>
+    </footer>
+</body>
+</html>
+    '''
+
+@app.route('/news/2025-07-02/')
+def news_2025_07_02():
+    return '''
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>泰拉集团发布2025年度可持续发展报告 | 泰拉集团</title>
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #f4f7fb;
+            color: #1a2a3a;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+        }
+        nav {
+            position: fixed; top: 0; width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid #e0e7ef;
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+        .nav-bottom {
+            position: relative;
+            display: flex; justify-content: center; align-items: center;
+            padding: 18px 60px;
+            background: transparent; backdrop-filter: blur(10px);
+        }
+        .bottom-logo {
+            position: absolute; left: 60px; top: 50%; transform: translateY(-50%);
+            height: 34px; width: auto; display: block; z-index: 2;
+        }
+        .search-box {
+            position: absolute; right: 60px; top: 50%; transform: translateY(-50%);
+            display: flex; align-items: center; gap: 8px;
+            width: 280px; padding: 7px 18px;
+            border: 1px solid #b0bec5; border-radius: 24px;
+            background: #ffffff; cursor: pointer; text-decoration: none;
+            z-index: 2; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .search-box:hover { border-color: #0066cc; }
+        .search-box .search-icon { font-size: 18px; color: #0066cc; }
+        .search-box span { font-size: 16px; color: #5e6f82; }
+        .nav-links {
+            display: flex; gap: 0; align-items: center;
+        }
+        .nav-links a {
+            color: #4a5c6c; text-decoration: none;
+            font-size: 17px; font-weight: 600; transition: color 0.3s;
+        }
+        .nav-links a:hover { color: #0066cc; }
+        .nav-links a:not(:last-child)::after {
+            content: "|"; margin-left: 28px; margin-right: 28px;
+            color: #b0bec5; opacity: 0.6;
+        }
+        .container {
+            max-width: 800px; margin: 120px auto 80px; padding: 0 40px;
+        }
+        .article-title {
+            font-size: 36px; font-weight: 700; color: #0b2b44; margin-bottom: 12px;
+        }
+        .article-date { font-size: 14px; color: #8393a5; margin-bottom: 24px; }
+        .article-body { font-size: 17px; color: #4a5c6c; line-height: 1.8; }
+        .article-body p { margin-bottom: 16px; }
+        footer {
+            text-align: center; padding: 40px 20px;
+            border-top: 1px solid #dce3eb; background: #fff;
+        }
+        footer p { color: #8393a5; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-bottom">
+            <a href="/" class="bottom-logo-link">
+                <img src="/static/terralogo.png" alt="Logo" class="bottom-logo">
+            </a>
+            <a href="#" class="search-box">
+                <span class="search-icon">🔍</span>
+                <span>搜索</span>
+            </a>
+            <div class="nav-links">
+                <a href="/products/">产品与服务</a>
+                <a href="/about/">关于我们</a>
+                <a href="/news/">新闻中心</a>
+                <a href="/careers/">招贤纳士</a>
+                <a href="/contact/">联系我们</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="article-title">泰拉集团发布2025年度可持续发展报告</h1>
+        <div class="article-date">2025年7月2日</div>
+        <div class="article-body">
+            <p>泰拉集团今日正式发布了《2025年度可持续发展报告》，全面阐述了集团在环境保护、社区共建及科研伦理方面的承诺与最新进展。报告显示，集团已提前实现2025年碳排放强度下降20%的目标。</p>
+            <p>报告重点介绍了三个关键领域的成果：绿色采矿技术的推广使矿区水资源消耗降低了35%；“社区共建计划”累计投入超过2亿美元，用于改善诺文斯克地区的基础教育与医疗条件；内部伦理委员会全年审查并否决了12项存在潜在伦理争议的研究项目。</p>
+            <p>集团首席执行官在报告致辞中强调：“科学的力量必须与责任同行。我们追求的不只是创新，更是对人类与地球的长期承诺。”</p>
+        </div>
+        <p style="margin-top: 40px;">
+            <a href="/news/">← 返回新闻中心</a>
         </p>
     </div>
 
