@@ -6,7 +6,9 @@ freezer = Freezer(app)
 
 @freezer.register_generator
 def all_pages():
-    yield '/'
+    yield '/'              # 游戏入口（新首页）
+    yield '/desktop/'      # 模拟桌面
+    yield '/home/'         # 泰拉集团主页
     yield '/about/'
     yield '/careers/'
     yield '/news/'
@@ -18,7 +20,283 @@ def all_pages():
     yield '/news/2025-08-15/'
     yield '/news/2025-07-02/'
 
+# ========== 游戏入口（网站首页） ==========
 @app.route('/')
+def game_entry():
+    return '''
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>逃离石家庄 - 网页解谜游戏</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            width: 100vw; height: 100vh;
+            background: #0a0f0f;
+            font-family: 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .fog-container {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(ellipse at 20% 50%, #1b2b2b 0%, #0a0f0f 70%);
+            z-index: 0;
+        }
+        .fog-layer {
+            position: absolute; top: 0; left: 0;
+            width: 200%; height: 200%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" opacity="0.08"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter><rect width="800" height="600" filter="url(%23noise)"/></svg>');
+            animation: fogMove 60s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes fogMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-50%, -50%); }
+        }
+        .main-card {
+            position: relative; z-index: 10;
+            text-align: center; padding: 60px 50px;
+            background: rgba(10,15,15,0.75);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.7);
+            max-width: 600px; width: 90%;
+        }
+        .game-title {
+            font-size: clamp(42px, 10vw, 72px); font-weight: 900;
+            letter-spacing: 8px; color: #e6e9e8;
+            text-shadow: 0 0 20px rgba(100,180,160,0.5);
+            margin-bottom: 20px; line-height: 1.2;
+        }
+        .subtitle {
+            font-size: 16px; letter-spacing: 10px;
+            color: #667a74; text-transform: uppercase;
+            margin-bottom: 40px;
+        }
+        .intro-text {
+            color: #a3b9b0; font-size: 17px; line-height: 1.8;
+            margin-bottom: 45px; max-width: 480px;
+            margin-left: auto; margin-right: auto;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .start-btn {
+            display: inline-block; padding: 16px 48px;
+            background: transparent; border: 2px solid #4a8c7c;
+            color: #cfe6db; font-size: 20px; font-weight: 600;
+            letter-spacing: 5px; text-decoration: none;
+            border-radius: 4px; transition: all 0.3s ease;
+            cursor: pointer; position: relative; overflow: hidden;
+        }
+        .start-btn:hover {
+            background: #4a8c7c; color: #fff;
+            box-shadow: 0 0 30px rgba(74,140,124,0.5);
+            border-color: #5faa97;
+        }
+        .start-btn::before {
+            content: ''; position: absolute; top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        .start-btn:hover::before { left: 100%; }
+        .version {
+            position: absolute; bottom: 25px; right: 30px;
+            color: #3a514b; font-size: 13px;
+            letter-spacing: 2px; z-index: 20;
+        }
+    </style>
+</head>
+<body>
+    <div class="fog-container"><div class="fog-layer"></div></div>
+    <div class="main-card">
+        <h1 class="game-title">逃离石家庄</h1>
+        <div class="subtitle">ESCAPE FROM SHIJIAZHUANG</div>
+        <p class="intro-text">
+            一通深夜的未接来电，一张泛黄的旧照片，<br>
+            你的挚友在石家庄郊外失踪。<br>
+            警方已放弃搜寻，但你知道——<br>
+            真相，就藏在数字的缝隙之中。<br>
+            这是一场跨越虚拟与现实的解谜之旅，<br>
+            你，准备好了吗？
+        </p>
+        <a href="/desktop/" class="start-btn">开 始 游 戏</a>
+    </div>
+    <div class="version">v1.0 · ARG</div>
+</body>
+</html>
+    '''
+
+# ========== 模拟桌面 ==========
+@app.route('/desktop/')
+def desktop():
+    return '''
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>桌面</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        body {
+            width: 100vw; height: 100vh;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="%23007bff"><circle cx="50" cy="50" r="40"/></svg>') center/cover no-repeat #007bff;
+            background-size: cover;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            overflow: hidden;
+        }
+        .desktop-icons {
+            position: absolute; top: 20px; left: 20px;
+            display: flex; flex-direction: column; gap: 25px;
+        }
+        .desktop-icon {
+            display: flex; flex-direction: column; align-items: center;
+            width: 80px; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+            cursor: pointer; padding: 5px;
+        }
+        .desktop-icon:hover { background: rgba(255,255,255,0.2); border-radius: 8px; }
+        .desktop-icon img { width: 48px; height: 48px; margin-bottom: 4px; }
+        .desktop-icon span { font-size: 13px; text-align: center; }
+        .taskbar {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            height: 48px; background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px); display: flex;
+            align-items: center; justify-content: space-between;
+            color: white; z-index: 1000;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        .start-btn {
+            background: none; border: none; color: white;
+            font-size: 18px; padding: 0 20px; height: 100%;
+            cursor: pointer; display: flex; align-items: center; gap: 6px;
+        }
+        .start-btn:hover { background: rgba(255,255,255,0.1); }
+        .taskbar-icons { display: flex; align-items: center; gap: 2px; flex: 1; padding: 0 10px; }
+        .taskbar-icon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 4px; cursor: pointer; }
+        .taskbar-icon:hover { background: rgba(255,255,255,0.2); }
+        .taskbar-right { display: flex; align-items: center; gap: 15px; padding: 0 15px; font-size: 13px; }
+        .window {
+            position: absolute; width: 500px; height: 400px;
+            background: white; border-radius: 8px 8px 0 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: none; flex-direction: column; overflow: hidden;
+            min-width: 300px; min-height: 200px; z-index: 500;
+        }
+        .window.active { z-index: 600; }
+        .window-titlebar {
+            background: #333; color: white; padding: 8px 12px;
+            display: flex; justify-content: space-between;
+            align-items: center; cursor: move;
+        }
+        .window-title { font-size: 14px; }
+        .window-controls { display: flex; gap: 8px; }
+        .window-controls button {
+            background: none; border: none; color: white;
+            font-size: 16px; cursor: pointer; width: 24px; height: 24px;
+            border-radius: 4px; display: flex; align-items: center; justify-content: center;
+        }
+        .window-controls button:hover { background: rgba(255,255,255,0.3); }
+        .window-content { flex: 1; overflow: auto; }
+        iframe { width: 100%; height: 100%; border: none; }
+    </style>
+</head>
+<body>
+    <div class="desktop-icons">
+        <div class="desktop-icon" ondblclick="openWindow('computer')">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='%23fff'%3E%3Crect x='15' y='20' width='70' height='50' rx='5'/%3E%3Crect x='30' y='75' width='40' height='10'/%3E%3Crect x='42' y='85' width='16' height='15'/%3E%3C/svg%3E" alt="此电脑">
+            <span>此电脑</span>
+        </div>
+        <div class="desktop-icon" ondblclick="openWindow('recycle')">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='%23fff'%3E%3Cpath d='M30 25 L35 15 L65 15 L70 25 L85 25 L80 80 L20 80 L15 25 Z'/%3E%3Crect x='40' y='35' width='20' height='35' fill='%23333'/%3E%3C/svg%3E" alt="回收站">
+            <span>回收站</span>
+        </div>
+        <div class="desktop-icon" ondblclick="openWindow('browser')">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='%23fff'%3E%3Ccircle cx='50' cy='50' r='35' fill='none' stroke='white' stroke-width='10'/%3E%3Ccircle cx='50' cy='50' r='15'/%3E%3C/svg%3E" alt="浏览器">
+            <span>浏览器</span>
+        </div>
+    </div>
+
+    <div class="window" id="computer-window">
+        <div class="window-titlebar"><span class="window-title">此电脑</span><div class="window-controls"><button onclick="minimizeWindow('computer')">─</button><button onclick="closeWindow('computer')">✕</button></div></div>
+        <div class="window-content">
+            <p style="padding:20px;">📁 本地磁盘 (C:)</p>
+            <p style="padding:0 20px;">📁 文档</p>
+            <p style="padding:0 20px;">📁 图片</p>
+        </div>
+    </div>
+    <div class="window" id="recycle-window">
+        <div class="window-titlebar"><span class="window-title">回收站</span><div class="window-controls"><button onclick="minimizeWindow('recycle')">─</button><button onclick="closeWindow('recycle')">✕</button></div></div>
+        <div class="window-content"><p style="padding:20px;color:#666;">回收站是空的。</p></div>
+    </div>
+    <div class="window" id="browser-window">
+        <div class="window-titlebar"><span class="window-title">浏览器 - Terra Group</span><div class="window-controls"><button onclick="minimizeWindow('browser')">─</button><button onclick="closeWindow('browser')">✕</button></div></div>
+        <div class="window-content"><iframe src="/home/"></iframe></div>
+    </div>
+
+    <div class="taskbar">
+        <button class="start-btn">⊞ 开始</button>
+        <div class="taskbar-icons" id="taskbar-icons"></div>
+        <div class="taskbar-right"><span id="clock"></span></div>
+    </div>
+
+    <script>
+        let zIndexCounter = 500;
+        let activeWindows = {};
+        function openWindow(name) {
+            const win = document.getElementById(name + '-window');
+            if (!win) return;
+            if (win.style.display === 'flex') { win.style.zIndex = ++zIndexCounter; return; }
+            win.style.display = 'flex'; win.style.zIndex = ++zIndexCounter;
+            win.style.left = (100 + Math.random() * 200) + 'px';
+            win.style.top = (50 + Math.random() * 150) + 'px';
+            if (!activeWindows[name]) {
+                const taskIcon = document.createElement('div');
+                taskIcon.className = 'taskbar-icon'; taskIcon.title = name;
+                taskIcon.innerHTML = '📄'; taskIcon.onclick = () => focusWindow(name);
+                document.getElementById('taskbar-icons').appendChild(taskIcon);
+                activeWindows[name] = taskIcon;
+            }
+        }
+        function focusWindow(name) {
+            const win = document.getElementById(name + '-window');
+            if (win && win.style.display === 'flex') win.style.zIndex = ++zIndexCounter;
+        }
+        function minimizeWindow(name) { document.getElementById(name + '-window').style.display = 'none'; }
+        function closeWindow(name) {
+            document.getElementById(name + '-window').style.display = 'none';
+            if (activeWindows[name]) { activeWindows[name].remove(); delete activeWindows[name]; }
+        }
+        document.querySelectorAll('.window').forEach(win => {
+            const titlebar = win.querySelector('.window-titlebar');
+            let offsetX, offsetY, isDragging = false;
+            titlebar.addEventListener('mousedown', (e) => {
+                isDragging = true; win.style.zIndex = ++zIndexCounter;
+                offsetX = e.clientX - win.offsetLeft; offsetY = e.clientY - win.offsetTop;
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+            function onMouseMove(e) { if (!isDragging) return; win.style.left = (e.clientX - offsetX) + 'px'; win.style.top = (e.clientY - offsetY) + 'px'; }
+            function onMouseUp() { isDragging = false; document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); }
+        });
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').textContent = now.toLocaleTimeString('zh-CN',{hour12:false}) + '  ' + now.toLocaleDateString('zh-CN');
+        }
+        setInterval(updateClock,1000); updateClock();
+    </script>
+</body>
+</html>
+    '''
+
+# ========== 泰拉集团主页（/home/） ==========
+@app.route('/home/')
 def home():
     return '''
 <!DOCTYPE html>
@@ -32,430 +310,78 @@ def home():
     <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
     <style>
-        /* 定义本地 Versa 字体 */
-        @font-face {
-            font-family: 'Versa';
-            src: url('/static/fonts/Versa.woff2') format('woff2');
-            font-weight: normal;
-            font-style: normal;
-            font-display: swap;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background-color: #f4f7fb;
-            color: #1a2a3a;
-            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            line-height: 1.6;
-        }
-        /* 导航栏容器 */
-        nav {
-            position: fixed; top: 0; width: 100%;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-            background: transparent;
-            transition: background 0.4s ease;
-        }
-        nav:hover {
-            background: rgba(255,255,255,0.95);
-            border-bottom: 1px solid #e0e7ef;
-        }
-        /* 上半部分 Logo 行 */
-        .nav-top {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 14px 60px;
-            background: transparent;
-            backdrop-filter: blur(10px);
-            overflow: hidden;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
-        }
-        .nav-top.hide-logo {
-            max-height: 0;
-            padding-top: 0;
-            padding-bottom: 0;
-            opacity: 0;
-            box-shadow: none;
-        }
-        .nav-logo {
-            height: 44px;
-            width: auto;
-        }
-        /* 下半部分 链接行 + 搜索 */
-        .nav-bottom {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 18px 60px;
-            background: transparent;
-            backdrop-filter: blur(10px);
-            transition: background 0.4s ease, box-shadow 0.4s ease;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
-        }
-        /* 左侧小Logo（上半隐藏时显示） */
-        .bottom-logo {
-            position: absolute;
-            left: 60px;
-            top: 50%;
-            transform: translateY(-50%);
-            height: 34px;
-            width: auto;
-            display: none;
-            z-index: 2;
-        }
-        .nav-top.hide-logo ~ .nav-bottom .bottom-logo {
-            display: block;
-        }
-        /* 搜索框（默认半透明） */
-        .search-box {
-            position: absolute;
-            right: 60px;
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            width: 280px;
-            padding: 7px 18px;
-            border: 1px solid rgba(255,255,255,0.8);
-            border-radius: 24px;
-            background: rgba(255,255,255,0.25);
-            backdrop-filter: blur(4px);
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-            z-index: 2;
-        }
-        .search-box:hover {
-            border-color: #ffffff;
-            background: rgba(255,255,255,0.35);
-        }
-        .search-box .search-icon {
-            font-size: 18px;
-            color: #ffffff;
-        }
-        .search-box span {
-            font-size: 16px;
-            color: #ffffff;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.6);
-        }
-        /* 导航链接 */
-        .nav-links {
-            display: flex;
-            gap: 0;
-            align-items: center;
-        }
-        .nav-links a {
-            color: #ffffff;
-            text-decoration: none;
-            font-size: 17px;
-            font-weight: 600;
-            text-shadow: 0 0 2px rgba(0,0,0,0.8), 0 1px 4px rgba(0,0,0,0.7);
-            transition: color 0.3s, text-shadow 0.3s;
-        }
-        .nav-links a:hover {
-            color: #00d4ff;
-        }
-        /* 分隔符 */
-        .nav-links a:not(:last-child)::after {
-            content: "|";
-            margin-left: 28px;
-            margin-right: 28px;
-            color: inherit;
-            opacity: 0.6;
-        }
-        /* 上半隐藏时，下半部分变为不透明白色背景 */
-        .nav-top.hide-logo ~ .nav-bottom {
-            background: rgba(255,255,255,0.95) !important;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-        }
-        .nav-top.hide-logo ~ .nav-bottom .nav-links a {
-            color: #4a5c6c;
-            text-shadow: none;
-        }
-        .nav-top.hide-logo ~ .nav-bottom .nav-links a:hover {
-            color: #0066cc;
-        }
-        .nav-top.hide-logo ~ .nav-bottom .search-box {
-            border-color: #b0bec5;
-            background: #ffffff;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
-        .nav-top.hide-logo ~ .nav-bottom .search-box .search-icon {
-            color: #0066cc;
-        }
-        .nav-top.hide-logo ~ .nav-bottom .search-box span {
-            color: #5e6f82;
-            text-shadow: none;
-        }
-        /* 悬停时整体变白 */
-        nav:hover .nav-bottom {
-            background: transparent;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.12);
-        }
-        nav:hover .nav-links a {
-            color: #4a5c6c;
-            text-shadow: none;
-        }
-        nav:hover .nav-links a:hover {
-            color: #0066cc;
-        }
-        nav:hover .search-box {
-            border-color: #b0bec5;
-            background: #ffffff;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
-        nav:hover .search-box:hover {
-            border-color: #0066cc;
-            background: #ffffff;
-        }
-        nav:hover .search-box .search-icon {
-            color: #0066cc;
-        }
-        nav:hover .search-box span {
-            color: #5e6f82;
-            text-shadow: none;
-        }
-        /* 通用区块 */
-        .section {
-            padding: 100px 60px 80px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        /* 首屏 - 视频背景 */
-        .hero {
-            min-height: 100vh;
-            display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .bg-video {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            object-fit: cover;
-            z-index: 0;
-        }
-        .overlay {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.35);
-            z-index: 1;
-        }
-        /* 向下滚动箭头 */
-        .scroll-hint {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 40px;
-            color: rgba(255,255,255,0.8);
-            text-shadow: 0 2px 8px rgba(0,0,0,0.5);
-            z-index: 2;
-            animation: bounce 2s infinite;
-            cursor: default;
-            user-select: none;
-        }
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {
-                transform: translateX(-50%) translateY(0);
-            }
-            40% {
-                transform: translateX(-50%) translateY(-15px);
-            }
-            60% {
-                transform: translateX(-50%) translateY(-8px);
-            }
-        }
-        .hero h1 {
-            font-size: clamp(48px, 10vw, 90px); font-weight: 800;
-            letter-spacing: 8px;
-            color: #ffffff;
-            text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 0 0 8px rgba(0,0,0,0.8);
-            margin-bottom: 16px;
-            position: relative; z-index: 2;
-            text-transform: uppercase;
-            font-family: 'Versa', 'Orbitron', 'Michroma', sans-serif;
-        }
-        .hero p.tagline {
-            font-size: 22px;
-            letter-spacing: 4px;
-            color: rgba(255,255,255,0.95);
-            text-shadow: 0 2px 8px rgba(0,0,0,0.5);
-            margin-bottom: 40px;
-            position: relative; z-index: 2;
-            font-family: 'Georgia', 'Times New Roman', serif;
-            font-style: italic;
-        }
-        .hero .btn {
-            border: 2px solid #ffffff; color: #ffffff;
-            padding: 14px 48px; font-size: 16px; letter-spacing: 4px;
-            background: rgba(0,0,0,0.3);
-            backdrop-filter: blur(4px);
-            cursor: default;
-            text-transform: uppercase; border-radius: 4px;
-            transition: all 0.3s; display: inline-block;
-            user-select: none;
-            position: relative; z-index: 2;
-        }
-        .hero .btn:hover {
-            background: rgba(255,255,255,0.2);
-            border-color: #00b4d8;
-            color: #00b4d8;
-        }
-        /* 英文副标题 */
-        .about-subtitle {
-            text-align: center;
-            font-size: 18px;
-            color: #a0a8b5;
-            font-family: 'Helvetica Neue', 'Arial', sans-serif;
-            font-weight: 500;
-            letter-spacing: 2px;
-            margin-bottom: 0;
-        }
-        /* 中文主标题 */
-        .about-title {
-            text-align: center;
-            font-size: 56px;
-            letter-spacing: 2px;
-            margin-bottom: 6px;
-            font-weight: 700;
-            color: #0b2b44;
-        }
-        /* “走进泰拉” 板块样式 */
-        .about-box {
-            display: flex;
-            background: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 12px 36px rgba(0,0,0,0.08);
-            overflow: hidden;
-            margin-top: 40px;
-            min-height: 380px;
-        }
-        .about-img {
-            width: 48%;
-            object-fit: cover;
-            flex-shrink: 0;
-        }
-        .about-content {
-            padding: 56px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        .about-content p {
-            font-size: 17px;
-            color: #4a5c6c;
-            line-height: 1.8;
-            margin-bottom: 28px;
-        }
-        /* 按钮 */
-        .more-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #0066cc;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            padding: 14px 28px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            position: relative;
-            align-self: flex-start;
-            height: 52px;
-            box-sizing: border-box;
-        }
-        .more-btn .arrow-icon {
-            font-size: 30px;
-            font-weight: 900;
-            line-height: 1;
-            transition: transform 0.3s ease, margin 0.3s ease;
-            order: 0;
-            margin-top: -6px;
-        }
-        .more-btn .btn-text {
-            max-width: 0;
-            overflow: hidden;
-            white-space: nowrap;
-            transition: max-width 0.4s ease, margin 0.3s ease, opacity 0.3s ease;
-            opacity: 0;
-            margin-left: 0;
-            order: 1;
-        }
-        .more-btn:hover .btn-text {
-            max-width: 120px;
-            opacity: 1;
-            margin-left: 10px;
-        }
-        .more-btn:hover .arrow-icon {
-            order: 1;
-            margin-left: 0;
-            margin-top: -6px;
-        }
-        .more-btn:hover .btn-text {
-            order: 0;
-        }
-        /* 新闻动态 */
-        .news-list {
-            display: flex; flex-direction: column; gap: 24px;
-            margin-top: 40px;
-        }
-        .news-item {
-            border-left: 4px solid #0077b6; padding-left: 28px;
-            background: #fff; padding: 24px 28px; border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-            transition: border-color 0.3s;
-        }
-        .news-item:hover { border-left-color: #00b4d8; }
-        .news-date {
-            font-size: 13px; color: #8393a5; letter-spacing: 2px;
-            margin-bottom: 6px;
-        }
-        .news-title {
-            font-size: 20px; font-weight: 600; color: #0b2b44;
-        }
-        .news-title a {
-            text-decoration: none;
-            color: inherit;
-        }
-        .news-title a:hover {
-            color: #0066cc;
-        }
-        .news-desc {
-            font-size: 15px; color: #4a5c6c; margin-top: 8px;
-        }
-        /* 页脚 */
-        footer {
-            text-align: center; padding: 60px 20px 40px;
-            border-top: 1px solid #dce3eb; background: #fff;
-        }
-        footer p {
-            color: #8393a5; font-size: 13px;
-        }
+        @font-face { font-family:'Versa'; src:url('/static/fonts/Versa.woff2') format('woff2'); font-weight:normal; font-style:normal; font-display:swap; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { background-color:#f4f7fb; color:#1a2a3a; font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif; line-height:1.6; }
+        nav { position:fixed; top:0; width:100%; z-index:1000; border-bottom:1px solid rgba(255,255,255,0.2); background:transparent; transition:background 0.4s; }
+        nav:hover { background:rgba(255,255,255,0.95); border-bottom:1px solid #e0e7ef; }
+        .nav-top { display:flex; justify-content:center; align-items:center; padding:14px 60px; background:transparent; backdrop-filter:blur(10px); overflow:hidden; transition:all 0.3s; box-shadow:0 2px 12px rgba(0,0,0,0.05); }
+        .nav-top.hide-logo { max-height:0; padding-top:0; padding-bottom:0; opacity:0; box-shadow:none; }
+        .nav-logo { height:44px; width:auto; }
+        .nav-bottom { position:relative; display:flex; justify-content:center; align-items:center; padding:18px 60px; background:transparent; backdrop-filter:blur(10px); transition:background 0.4s, box-shadow 0.4s; box-shadow:0 2px 12px rgba(0,0,0,0.05); }
+        .bottom-logo { position:absolute; left:60px; top:50%; transform:translateY(-50%); height:34px; width:auto; display:none; z-index:2; }
+        .nav-top.hide-logo ~ .nav-bottom .bottom-logo { display:block; }
+        .search-box { position:absolute; right:60px; top:50%; transform:translateY(-50%); display:flex; align-items:center; gap:8px; width:280px; padding:7px 18px; border:1px solid rgba(255,255,255,0.8); border-radius:24px; background:rgba(255,255,255,0.25); backdrop-filter:blur(4px); cursor:pointer; transition:0.3s; text-decoration:none; z-index:2; }
+        .search-box:hover { border-color:#fff; background:rgba(255,255,255,0.35); }
+        .search-box .search-icon { font-size:18px; color:#fff; }
+        .search-box span { font-size:16px; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,0.6); }
+        .nav-links { display:flex; gap:0; align-items:center; }
+        .nav-links a { color:#fff; text-decoration:none; font-size:17px; font-weight:600; text-shadow:0 0 2px rgba(0,0,0,0.8),0 1px 4px rgba(0,0,0,0.7); transition:0.3s; }
+        .nav-links a:hover { color:#00d4ff; }
+        .nav-links a:not(:last-child)::after { content:"|"; margin-left:28px; margin-right:28px; color:inherit; opacity:0.6; }
+        .nav-top.hide-logo ~ .nav-bottom { background:rgba(255,255,255,0.95)!important; backdrop-filter:blur(10px); box-shadow:0 2px 12px rgba(0,0,0,0.1); }
+        .nav-top.hide-logo ~ .nav-bottom .nav-links a { color:#4a5c6c; text-shadow:none; }
+        .nav-top.hide-logo ~ .nav-bottom .nav-links a:hover { color:#0066cc; }
+        .nav-top.hide-logo ~ .nav-bottom .search-box { border-color:#b0bec5; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+        .nav-top.hide-logo ~ .nav-bottom .search-box .search-icon { color:#0066cc; }
+        .nav-top.hide-logo ~ .nav-bottom .search-box span { color:#5e6f82; text-shadow:none; }
+        nav:hover .nav-bottom { background:transparent; box-shadow:0 2px 12px rgba(0,0,0,0.12); }
+        nav:hover .nav-links a { color:#4a5c6c; text-shadow:none; }
+        nav:hover .nav-links a:hover { color:#0066cc; }
+        nav:hover .search-box { border-color:#b0bec5; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+        nav:hover .search-box:hover { border-color:#0066cc; }
+        nav:hover .search-box .search-icon { color:#0066cc; }
+        nav:hover .search-box span { color:#5e6f82; text-shadow:none; }
+        .section { padding:100px 60px 80px; max-width:1200px; margin:0 auto; }
+        .hero { min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; position:relative; overflow:hidden; }
+        .bg-video { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:0; }
+        .overlay { position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.35); z-index:1; }
+        .scroll-hint { position:absolute; bottom:30px; left:50%; transform:translateX(-50%); font-size:40px; color:rgba(255,255,255,0.8); text-shadow:0 2px 8px rgba(0,0,0,0.5); z-index:2; animation:bounce 2s infinite; cursor:default; user-select:none; }
+        @keyframes bounce { 0%,20%,50%,80%,100%{ transform:translateX(-50%) translateY(0); } 40%{ transform:translateX(-50%) translateY(-15px); } 60%{ transform:translateX(-50%) translateY(-8px); } }
+        .hero h1 { font-size:clamp(48px,10vw,90px); font-weight:800; letter-spacing:8px; color:#fff; text-shadow:-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000,2px 2px 0 #000,0 0 8px rgba(0,0,0,0.8); margin-bottom:16px; position:relative; z-index:2; text-transform:uppercase; font-family:'Versa','Orbitron','Michroma',sans-serif; }
+        .hero p.tagline { font-size:22px; letter-spacing:4px; color:rgba(255,255,255,0.95); text-shadow:0 2px 8px rgba(0,0,0,0.5); margin-bottom:40px; position:relative; z-index:2; font-family:'Georgia','Times New Roman',serif; font-style:italic; }
+        .hero .btn { border:2px solid #fff; color:#fff; padding:14px 48px; font-size:16px; letter-spacing:4px; background:rgba(0,0,0,0.3); backdrop-filter:blur(4px); cursor:default; text-transform:uppercase; border-radius:4px; transition:0.3s; display:inline-block; user-select:none; position:relative; z-index:2; }
+        .hero .btn:hover { background:rgba(255,255,255,0.2); border-color:#00b4d8; color:#00b4d8; }
+        .about-subtitle { text-align:center; font-size:18px; color:#a0a8b5; font-family:'Helvetica Neue','Arial',sans-serif; font-weight:500; letter-spacing:2px; margin-bottom:0; }
+        .about-title { text-align:center; font-size:56px; letter-spacing:2px; margin-bottom:6px; font-weight:700; color:#0b2b44; }
+        .about-box { display:flex; background:#fff; border-radius:20px; box-shadow:0 12px 36px rgba(0,0,0,0.08); overflow:hidden; margin-top:40px; min-height:380px; }
+        .about-img { width:48%; object-fit:cover; flex-shrink:0; }
+        .about-content { padding:56px; display:flex; flex-direction:column; justify-content:center; }
+        .about-content p { font-size:17px; color:#4a5c6c; line-height:1.8; margin-bottom:28px; }
+        .more-btn { display:inline-flex; align-items:center; justify-content:center; background-color:#0066cc; color:#fff; border:none; border-radius:8px; padding:14px 28px; font-size:18px; font-weight:600; cursor:pointer; text-decoration:none; transition:0.3s; position:relative; align-self:flex-start; height:52px; }
+        .more-btn .arrow-icon { font-size:30px; font-weight:900; line-height:1; transition:0.3s; order:0; margin-top:-6px; }
+        .more-btn .btn-text { max-width:0; overflow:hidden; white-space:nowrap; transition:max-width 0.4s, margin 0.3s, opacity 0.3s; opacity:0; margin-left:0; order:1; }
+        .more-btn:hover .btn-text { max-width:120px; opacity:1; margin-left:10px; }
+        .more-btn:hover .arrow-icon { order:1; margin-left:0; margin-top:-6px; }
+        .more-btn:hover .btn-text { order:0; }
+        .news-list { display:flex; flex-direction:column; gap:24px; margin-top:40px; }
+        .news-item { border-left:4px solid #0077b6; padding-left:28px; background:#fff; padding:24px 28px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.02); transition:border-color 0.3s; }
+        .news-item:hover { border-left-color:#00b4d8; }
+        .news-date { font-size:13px; color:#8393a5; letter-spacing:2px; margin-bottom:6px; }
+        .news-title { font-size:20px; font-weight:600; color:#0b2b44; }
+        .news-title a { text-decoration:none; color:inherit; }
+        .news-title a:hover { color:#0066cc; }
+        .news-desc { font-size:15px; color:#4a5c6c; margin-top:8px; }
+        footer { text-align:center; padding:60px 20px 40px; border-top:1px solid #dce3eb; background:#fff; }
+        footer p { color:#8393a5; font-size:13px; }
     </style>
 </head>
 <body>
     <nav id="mainNav">
-        <div class="nav-top" id="navTop">
-            <img src="/static/terralogo.png" alt="Terra Group Logo" class="nav-logo">
-        </div>
+        <div class="nav-top" id="navTop"><img src="/static/terralogo.png" alt="Terra Group Logo" class="nav-logo"></div>
         <div class="nav-bottom">
             <img src="/static/terralogo.png" alt="Logo" class="bottom-logo">
-            <a href="#" class="search-box" id="searchLink">
-                <span class="search-icon">🔍</span>
-                <span>搜索</span>
-            </a>
+            <a href="#" class="search-box" id="searchLink"><span class="search-icon">🔍</span><span>搜索</span></a>
             <div class="nav-links">
                 <a href="/products/">产品与服务</a>
                 <a href="/about/">关于我们</a>
@@ -469,7 +395,7 @@ def home():
     <div class="hero" id="heroSection">
         <video autoplay muted loop playsinline class="bg-video">
             <source src="/static/background.mp4" type="video/mp4">
-            <img src="/static/background.jpg" alt="Terra Group 背景">
+            <img src="/static/background.jpg" alt="背景">
         </video>
         <div class="overlay"></div>
         <h1>TERRAGROUP</h1>
@@ -478,84 +404,38 @@ def home():
         <div class="scroll-hint">↓</div>
     </div>
 
-    <!-- 走进泰拉板块 -->
-    <div class="section" style="max-width: 1400px;">
+    <div class="section" style="max-width:1400px;">
         <p class="about-subtitle">ABOUT TERRAGROUP</p>
         <h2 class="about-title">走进泰拉</h2>
         <div class="about-box">
             <img src="/static/about-preview.jpg" alt="走进泰拉" class="about-img">
             <div class="about-content">
                 <p>
-                    泰拉集团（Terra Group）成立于1998年，总部位于英国，是一家业务遍及全球120多个国家的跨国巨头。
-                    我们以“Virtus in Scientia”（潜心科研）为核心理念，专注农业生物技术、前沿科技研究与全球基础设施建设。
-                    集团旗下拥有40余家大型企业，从诺文斯克到刚果，我们以科学的力量重塑未来。
+                    泰拉集团（Terra Group）成立于1998年，总部位于英国，是一家业务遍及全球120多个国家的跨国巨头。我们以“Virtus in Scientia”（潜心科研）为核心理念，专注农业生物技术、前沿科技研究与全球基础设施建设。集团旗下拥有40余家大型企业，从诺文斯克到刚果，我们以科学的力量重塑未来。
                 </p>
-                <a href="/about/" class="more-btn">
-                    <span class="arrow-icon">→</span>
-                    <span class="btn-text">了解更多</span>
-                </a>
+                <a href="/about/" class="more-btn"><span class="arrow-icon">→</span><span class="btn-text">了解更多</span></a>
             </div>
         </div>
     </div>
 
-    <!-- 新闻动态 -->
     <div class="section">
         <h2 style="font-size:32px; letter-spacing:3px;">新闻动态</h2>
         <div class="news-list">
-            <div class="news-item">
-                <div class="news-date">2025.10.12</div>
-                <div class="news-title"><a href="/news/2025-10-12/">Terra Group Labs 在诺文斯克新建三级生物实验室</a></div>
-                <div class="news-desc">该实验室将专注于传染病学研究，进一步强化集团在全球公共卫生领域的领导地位。</div>
-            </div>
-            <div class="news-item">
-                <div class="news-date">2025.09.28</div>
-                <div class="news-title"><a href="/news/2025-09-28/">集团与 USEC 国际安保续签战略合作协议</a></div>
-                <div class="news-desc">USEC 将继续为泰拉集团在全球的资产及人员提供安全保障服务。</div>
-            </div>
-            <div class="news-item">
-                <div class="news-date">2025.08.15</div>
-                <div class="news-title"><a href="/news/2025-08-15/">刚果（金）矿业项目顺利投产</a></div>
-                <div class="news-desc">该矿区的稀土与铀矿开采将为清洁能源与医疗同位素供应提供关键原料。</div>
-            </div>
+            <div class="news-item"><div class="news-date">2025.10.12</div><div class="news-title"><a href="/news/2025-10-12/">Terra Group Labs 在诺文斯克新建三级生物实验室</a></div><div class="news-desc">该实验室将专注于传染病学研究，进一步强化集团在全球公共卫生领域的领导地位。</div></div>
+            <div class="news-item"><div class="news-date">2025.09.28</div><div class="news-title"><a href="/news/2025-09-28/">集团与 USEC 国际安保续签战略合作协议</a></div><div class="news-desc">USEC 将继续为泰拉集团在全球的资产及人员提供安全保障服务。</div></div>
+            <div class="news-item"><div class="news-date">2025.08.15</div><div class="news-title"><a href="/news/2025-08-15/">刚果（金）矿业项目顺利投产</a></div><div class="news-desc">该矿区的稀土与铀矿开采将为清洁能源与医疗同位素供应提供关键原料。</div></div>
         </div>
     </div>
 
-    <footer>
-        <p>© 2026 Terra Group International. All rights reserved.</p>
-    </footer>
+    <footer><p>© 2026 Terra Group International. All rights reserved.</p></footer>
 
     <script>
-        const nav = document.getElementById('mainNav');
-        const navTop = document.getElementById('navTop');
-        const hero = document.getElementById('heroSection');
-        const searchLink = document.getElementById('searchLink');
-
-        function updateHeroPadding() {
-            const navHeight = nav.offsetHeight;
-            if (hero) {
-                hero.style.paddingTop = navHeight + 'px';
-            }
-        }
-        if (hero) {
-            updateHeroPadding();
-            window.addEventListener('resize', updateHeroPadding);
-        }
-
-        function handleScroll() {
-            const scrollY = window.scrollY;
-            if (scrollY > 100) {
-                navTop.classList.add('hide-logo');
-            } else if (scrollY <= 5) {
-                navTop.classList.remove('hide-logo');
-            }
-        }
-        window.addEventListener('scroll', handleScroll);
-        handleScroll();
-
-        searchLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('搜索功能暂未开放');
-        });
+        const nav = document.getElementById('mainNav'); const navTop = document.getElementById('navTop'); const hero = document.getElementById('heroSection'); const searchLink = document.getElementById('searchLink');
+        function updateHeroPadding() { const navHeight = nav.offsetHeight; if (hero) hero.style.paddingTop = navHeight + 'px'; }
+        if (hero) { updateHeroPadding(); window.addEventListener('resize', updateHeroPadding); }
+        function handleScroll() { const scrollY = window.scrollY; if (scrollY > 100) navTop.classList.add('hide-logo'); else if (scrollY <= 5) navTop.classList.remove('hide-logo'); }
+        window.addEventListener('scroll', handleScroll); handleScroll();
+        searchLink.addEventListener('click', function(e) { e.preventDefault(); console.log('搜索功能暂未开放'); });
     </script>
 </body>
 </html>
@@ -694,7 +574,7 @@ def about():
 <body>
     <nav>
         <div class="nav-bottom">
-            <a href="/" class="bottom-logo-link">
+            <a href="/home/" class="bottom-logo-link">
                 <img src="/static/terralogo.png" alt="Logo" class="bottom-logo">
             </a>
             <a href="#" class="search-box">
@@ -724,7 +604,7 @@ def about():
             集团与当地的私人武装、联合国维和部队甚至神秘主义势力有着千丝万缕的联系……
         </p>
         <p>
-            <a href="/">← 返回首页</a>
+            <a href="/home/">← 返回首页</a>
         </p>
     </div>
 
@@ -890,7 +770,7 @@ def careers():
 <body>
     <nav>
         <div class="nav-bottom">
-            <a href="/" class="bottom-logo-link">
+            <a href="/home/" class="bottom-logo-link">
                 <img src="/static/terralogo.png" alt="Logo" class="bottom-logo">
             </a>
             <a href="#" class="search-box">
@@ -933,7 +813,7 @@ def careers():
         </div>
 
         <p>
-            <a href="/">← 返回首页</a>
+            <a href="/home/">← 返回首页</a>
         </p>
     </div>
 
@@ -1110,7 +990,7 @@ def news():
 <body>
     <nav>
         <div class="nav-bottom">
-            <a href="/" class="bottom-logo-link">
+            <a href="/home/" class="bottom-logo-link">
                 <img src="/static/terralogo.png" alt="Logo" class="bottom-logo">
             </a>
             <a href="#" class="search-box">
@@ -1157,7 +1037,7 @@ def news():
         </div>
 
         <p style="margin-top: 40px;">
-            <a href="/">← 返回首页</a>
+            <a href="/home/">← 返回首页</a>
         </p>
     </div>
 
@@ -1332,7 +1212,7 @@ def products():
 <body>
     <nav>
         <div class="nav-bottom">
-            <a href="/" class="bottom-logo-link">
+            <a href="/home/" class="bottom-logo-link">
                 <img src="/static/terralogo.png" alt="Logo" class="bottom-logo">
             </a>
             <a href="#" class="search-box">
@@ -1389,7 +1269,7 @@ def products():
         </div>
 
         <p style="margin-top: 40px;">
-            <a href="/">← 返回首页</a>
+            <a href="/home/">← 返回首页</a>
         </p>
     </div>
 
@@ -1586,7 +1466,7 @@ def contact():
 <body>
     <nav>
         <div class="nav-bottom">
-            <a href="/" class="bottom-logo-link">
+            <a href="/home/" class="bottom-logo-link">
                 <img src="/static/terralogo.png" alt="Logo" class="bottom-logo">
             </a>
             <a href="#" class="search-box">
@@ -1639,7 +1519,7 @@ def contact():
         </div>
 
         <p style="margin-top: 40px;">
-            <a href="/">← 返回首页</a>
+            <a href="/home/">← 返回首页</a>
         </p>
     </div>
 
@@ -1769,7 +1649,7 @@ def news_2025_10_12():
 <body>
     <nav>
         <div class="nav-bottom">
-            <a href="/" class="bottom-logo-link">
+            <a href="/home/" class="bottom-logo-link">
                 <img src="/static/terralogo.png" alt="Logo" class="bottom-logo">
             </a>
             <a href="#" class="search-box">
@@ -1892,7 +1772,7 @@ def news_2025_09_28():
 <body>
     <nav>
         <div class="nav-bottom">
-            <a href="/" class="bottom-logo-link">
+            <a href="/home/" class="bottom-logo-link">
                 <img src="/static/terralogo.png" alt="Logo" class="bottom-logo">
             </a>
             <a href="#" class="search-box">
@@ -2009,7 +1889,7 @@ def news_2025_08_15():
 <body>
     <nav>
         <div class="nav-bottom">
-            <a href="/" class="bottom-logo-link">
+            <a href="/home/" class="bottom-logo-link">
                 <img src="/static/terralogo.png" alt="Logo" class="bottom-logo">
             </a>
             <a href="#" class="search-box">
@@ -2126,7 +2006,7 @@ def news_2025_07_02():
 <body>
     <nav>
         <div class="nav-bottom">
-            <a href="/" class="bottom-logo-link">
+            <a href="/home/" class="bottom-logo-link">
                 <img src="/static/terralogo.png" alt="Logo" class="bottom-logo">
             </a>
             <a href="#" class="search-box">
@@ -2162,6 +2042,5 @@ def news_2025_07_02():
 </body>
 </html>
     '''
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
