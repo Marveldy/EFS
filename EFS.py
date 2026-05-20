@@ -147,7 +147,7 @@ def desktop():
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
         body {
             width: 100vw; height: 100vh;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="%23007bff"><circle cx="50" cy="50" r="40"/></svg>') center/cover no-repeat #007bff;
+            background: url('/static/desktop-wallpaper.jpg') center/cover no-repeat #007bff;
             background-size: cover;
             font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
             overflow: hidden;
@@ -166,22 +166,36 @@ def desktop():
         .desktop-icon span { font-size: 13px; text-align: center; }
         .taskbar {
             position: absolute; bottom: 0; left: 0; right: 0;
-            height: 48px; background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(10px); display: flex;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(10px);
+            display: flex;
             align-items: center; justify-content: space-between;
-            color: white; z-index: 1000;
-            border-top: 1px solid rgba(255,255,255,0.2);
+            color: #333; z-index: 1000;
+            border-top: 1px solid rgba(0,0,0,0.1);
         }
         .start-btn {
-            background: none; border: none; color: white;
+            background: none; border: none; color: #333;
             font-size: 18px; padding: 0 20px; height: 100%;
             cursor: pointer; display: flex; align-items: center; gap: 6px;
         }
-        .start-btn:hover { background: rgba(255,255,255,0.1); }
+        .start-btn:hover { background: rgba(0,0,0,0.05); }
+        .start-btn img { height: 24px; width: auto; }
         .taskbar-icons { display: flex; align-items: center; gap: 2px; flex: 1; padding: 0 10px; }
-        .taskbar-icon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 4px; cursor: pointer; }
-        .taskbar-icon:hover { background: rgba(255,255,255,0.2); }
-        .taskbar-right { display: flex; align-items: center; gap: 15px; padding: 0 15px; font-size: 13px; }
+        .taskbar-icon {
+            width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 4px; cursor: pointer;
+        }
+        .taskbar-icon:hover { background: rgba(0,0,0,0.1); }
+        .taskbar-icon img { width: 24px; height: 24px; }
+        .taskbar-right {
+            display: flex; flex-direction: column; align-items: flex-end;
+            justify-content: center; padding: 0 15px; font-size: 12px;
+            line-height: 1.3; color: #333;
+        }
+        .taskbar-right .time { font-size: 14px; font-weight: 600; }
+        .taskbar-right .date { font-size: 11px; opacity: 0.8; }
         .window {
             position: absolute; width: 500px; height: 400px;
             background: white; border-radius: 8px 8px 0 0;
@@ -203,26 +217,40 @@ def desktop():
             border-radius: 4px; display: flex; align-items: center; justify-content: center;
         }
         .window-controls button:hover { background: rgba(255,255,255,0.3); }
-        .window-content { flex: 1; overflow: auto; }
+        .window-content { flex: 1; overflow: hidden; }
         iframe { width: 100%; height: 100%; border: none; }
+
+        /* 调整手柄 */
+        .resize-handle {
+            position: absolute; z-index: 10; background: transparent;
+        }
+        .resize-handle.top    { top: -3px; left: 0; right: 0; height: 6px; cursor: n-resize; }
+        .resize-handle.bottom { bottom: -3px; left: 0; right: 0; height: 6px; cursor: s-resize; }
+        .resize-handle.left   { left: -3px; top: 0; bottom: 0; width: 6px; cursor: w-resize; }
+        .resize-handle.right  { right: -3px; top: 0; bottom: 0; width: 6px; cursor: e-resize; }
+        .resize-handle.top-left     { top: -3px; left: -3px; width: 14px; height: 14px; cursor: nw-resize; }
+        .resize-handle.top-right    { top: -3px; right: -3px; width: 14px; height: 14px; cursor: ne-resize; }
+        .resize-handle.bottom-left  { bottom: -3px; left: -3px; width: 14px; height: 14px; cursor: sw-resize; }
+        .resize-handle.bottom-right { bottom: -3px; right: -3px; width: 14px; height: 14px; cursor: se-resize; }
     </style>
 </head>
 <body>
     <div class="desktop-icons">
-        <div class="desktop-icon" ondblclick="openWindow('computer')">
-            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='%23fff'%3E%3Crect x='15' y='20' width='70' height='50' rx='5'/%3E%3Crect x='30' y='75' width='40' height='10'/%3E%3Crect x='42' y='85' width='16' height='15'/%3E%3C/svg%3E" alt="此电脑">
+        <div class="desktop-icon" onclick="openWindow('computer')">
+            <img src="/static/desktop-mycomputer.png" alt="此电脑">
             <span>此电脑</span>
         </div>
-        <div class="desktop-icon" ondblclick="openWindow('recycle')">
-            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='%23fff'%3E%3Cpath d='M30 25 L35 15 L65 15 L70 25 L85 25 L80 80 L20 80 L15 25 Z'/%3E%3Crect x='40' y='35' width='20' height='35' fill='%23333'/%3E%3C/svg%3E" alt="回收站">
+        <div class="desktop-icon" onclick="openWindow('recycle')">
+            <img src="/static/desktop-recyclebin.png" alt="回收站">
             <span>回收站</span>
         </div>
-        <div class="desktop-icon" ondblclick="openWindow('browser')">
-            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='%23fff'%3E%3Ccircle cx='50' cy='50' r='35' fill='none' stroke='white' stroke-width='10'/%3E%3Ccircle cx='50' cy='50' r='15'/%3E%3C/svg%3E" alt="浏览器">
+        <div class="desktop-icon" onclick="openWindow('browser')">
+            <img src="/static/desktop-chrome.png" alt="浏览器">
             <span>浏览器</span>
         </div>
     </div>
 
+    <!-- 此电脑窗口 -->
     <div class="window" id="computer-window">
         <div class="window-titlebar"><span class="window-title">此电脑</span><div class="window-controls"><button onclick="minimizeWindow('computer')">─</button><button onclick="closeWindow('computer')">✕</button></div></div>
         <div class="window-content">
@@ -230,25 +258,46 @@ def desktop():
             <p style="padding:0 20px;">📁 文档</p>
             <p style="padding:0 20px;">📁 图片</p>
         </div>
+        <div class="resize-handle top"></div><div class="resize-handle bottom"></div><div class="resize-handle left"></div><div class="resize-handle right"></div>
+        <div class="resize-handle top-left"></div><div class="resize-handle top-right"></div><div class="resize-handle bottom-left"></div><div class="resize-handle bottom-right"></div>
     </div>
+    <!-- 回收站窗口 -->
     <div class="window" id="recycle-window">
         <div class="window-titlebar"><span class="window-title">回收站</span><div class="window-controls"><button onclick="minimizeWindow('recycle')">─</button><button onclick="closeWindow('recycle')">✕</button></div></div>
         <div class="window-content"><p style="padding:20px;color:#666;">回收站是空的。</p></div>
+        <div class="resize-handle top"></div><div class="resize-handle bottom"></div><div class="resize-handle left"></div><div class="resize-handle right"></div>
+        <div class="resize-handle top-left"></div><div class="resize-handle top-right"></div><div class="resize-handle bottom-left"></div><div class="resize-handle bottom-right"></div>
     </div>
-    <div class="window" id="browser-window">
+    <!-- 浏览器窗口 -->
+    <div class="window" id="browser-window" style="width:900px; height:600px;">
         <div class="window-titlebar"><span class="window-title">浏览器 - Terra Group</span><div class="window-controls"><button onclick="minimizeWindow('browser')">─</button><button onclick="closeWindow('browser')">✕</button></div></div>
         <div class="window-content"><iframe src="/home/"></iframe></div>
+        <div class="resize-handle top"></div><div class="resize-handle bottom"></div><div class="resize-handle left"></div><div class="resize-handle right"></div>
+        <div class="resize-handle top-left"></div><div class="resize-handle top-right"></div><div class="resize-handle bottom-left"></div><div class="resize-handle bottom-right"></div>
     </div>
 
     <div class="taskbar">
-        <button class="start-btn">⊞ 开始</button>
+        <button class="start-btn">
+            <img src="/static/desktop-windows.png" alt="开始">
+        </button>
         <div class="taskbar-icons" id="taskbar-icons"></div>
-        <div class="taskbar-right"><span id="clock"></span></div>
+        <div class="taskbar-right">
+            <div class="time" id="clock-time"></div>
+            <div class="date" id="clock-date"></div>
+        </div>
     </div>
 
     <script>
         let zIndexCounter = 500;
         let activeWindows = {};
+
+        // 窗口图标映射
+        const iconMap = {
+            computer: '/static/desktop-mycomputer.png',
+            recycle: '/static/desktop-recyclebin.png',
+            browser: '/static/desktop-chrome.png'
+        };
+
         function openWindow(name) {
             const win = document.getElementById(name + '-window');
             if (!win) return;
@@ -256,23 +305,34 @@ def desktop():
             win.style.display = 'flex'; win.style.zIndex = ++zIndexCounter;
             win.style.left = (100 + Math.random() * 200) + 'px';
             win.style.top = (50 + Math.random() * 150) + 'px';
+
             if (!activeWindows[name]) {
                 const taskIcon = document.createElement('div');
-                taskIcon.className = 'taskbar-icon'; taskIcon.title = name;
-                taskIcon.innerHTML = '📄'; taskIcon.onclick = () => focusWindow(name);
+                taskIcon.className = 'taskbar-icon';
+                taskIcon.title = name;
+                // 使用对应图标替换📄
+                const img = document.createElement('img');
+                img.src = iconMap[name] || '/static/desktop-mycomputer.png';
+                img.alt = name;
+                taskIcon.appendChild(img);
+                taskIcon.onclick = () => focusWindow(name);
                 document.getElementById('taskbar-icons').appendChild(taskIcon);
                 activeWindows[name] = taskIcon;
             }
         }
+
         function focusWindow(name) {
             const win = document.getElementById(name + '-window');
             if (win && win.style.display === 'flex') win.style.zIndex = ++zIndexCounter;
         }
+
         function minimizeWindow(name) { document.getElementById(name + '-window').style.display = 'none'; }
         function closeWindow(name) {
             document.getElementById(name + '-window').style.display = 'none';
             if (activeWindows[name]) { activeWindows[name].remove(); delete activeWindows[name]; }
         }
+
+        // 拖动窗口
         document.querySelectorAll('.window').forEach(win => {
             const titlebar = win.querySelector('.window-titlebar');
             let offsetX, offsetY, isDragging = false;
@@ -285,11 +345,58 @@ def desktop():
             function onMouseMove(e) { if (!isDragging) return; win.style.left = (e.clientX - offsetX) + 'px'; win.style.top = (e.clientY - offsetY) + 'px'; }
             function onMouseUp() { isDragging = false; document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); }
         });
+
+        // 全方位窗口大小调整
+        document.querySelectorAll('.resize-handle').forEach(handle => {
+            const win = handle.closest('.window');
+            handle.addEventListener('mousedown', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                const startX = e.clientX;
+                const startY = e.clientY;
+                const startLeft = win.offsetLeft;
+                const startTop = win.offsetTop;
+                const startWidth = win.offsetWidth;
+                const startHeight = win.offsetHeight;
+                const handleClass = handle.className;
+
+                function onResizeMove(e) {
+                    const dx = e.clientX - startX;
+                    const dy = e.clientY - startY;
+                    let newWidth = startWidth;
+                    let newHeight = startHeight;
+                    let newLeft = startLeft;
+                    let newTop = startTop;
+
+                    if (handleClass.includes('right'))  newWidth  = Math.max(300, startWidth + dx);
+                    if (handleClass.includes('left'))   { newWidth  = Math.max(300, startWidth - dx); newLeft = startLeft + dx; }
+                    if (handleClass.includes('bottom')) newHeight = Math.max(200, startHeight + dy);
+                    if (handleClass.includes('top'))    { newHeight = Math.max(200, startHeight - dy); newTop = startTop + dy; }
+
+                    win.style.width = newWidth + 'px';
+                    win.style.height = newHeight + 'px';
+                    if (handleClass.includes('left') || handleClass.includes('right')) win.style.left = newLeft + 'px';
+                    if (handleClass.includes('top') || handleClass.includes('bottom')) win.style.top = newTop + 'px';
+                }
+
+                function onResizeUp() {
+                    document.removeEventListener('mousemove', onResizeMove);
+                    document.removeEventListener('mouseup', onResizeUp);
+                }
+
+                document.addEventListener('mousemove', onResizeMove);
+                document.addEventListener('mouseup', onResizeUp);
+            });
+        });
+
+        // 时钟
         function updateClock() {
             const now = new Date();
-            document.getElementById('clock').textContent = now.toLocaleTimeString('zh-CN',{hour12:false}) + '  ' + now.toLocaleDateString('zh-CN');
+            document.getElementById('clock-time').textContent = now.toLocaleTimeString('zh-CN', { hour12: false });
+            document.getElementById('clock-date').textContent = now.toLocaleDateString('zh-CN');
         }
-        setInterval(updateClock,1000); updateClock();
+        setInterval(updateClock, 1000);
+        updateClock();
     </script>
 </body>
 </html>
