@@ -231,6 +231,35 @@ def desktop():
             background: white;
         }
 
+        /* 逃离塔科夫加载/警告样式 */
+        .tarkov-loading {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100%; gap: 20px;
+        }
+        .tarkov-spinner {
+            width: 48px; height: 48px;
+            border: 5px solid #ddd;
+            border-top: 5px solid #0066cc;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .tarkov-warning {
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            height: 100%; gap: 20px;
+        }
+        .tarkov-warning .icon { font-size: 48px; }
+        .tarkov-warning .text {
+            font-size: 20px; font-weight: bold; color: #c00;
+            text-align: center; line-height: 1.5;
+        }
+        .tarkov-warning button {
+            padding: 8px 24px; font-size: 16px; cursor: pointer;
+            background: #0066cc; color: white; border: none; border-radius: 4px;
+        }
+
         /* 记事本样式 */
         .notepad-menubar {
             display: flex;
@@ -243,23 +272,16 @@ def desktop():
             font-size: 13px;
             cursor: default;
         }
-        .notepad-menubar span:hover {
-            background: #d0d0d0;
-        }
+        .notepad-menubar span:hover { background: #d0d0d0; }
         .notepad-textarea {
             flex: 1;
             padding: 4px;
             font-family: 'Consolas', 'Courier New', monospace;
             font-size: 14px;
-            border: none;
-            outline: none;
-            resize: none;
-            width: 100%;
-            height: 100%;
-            background: white;
-            color: #333;
-            cursor: text;
-            user-select: text;
+            border: none; outline: none; resize: none;
+            width: 100%; height: 100%;
+            background: white; color: #333;
+            cursor: text; user-select: text;
         }
         .notepad-statusbar {
             display: flex;
@@ -267,8 +289,7 @@ def desktop():
             padding: 4px 10px;
             background: #f0f0f0;
             border-top: 1px solid #ccc;
-            font-size: 12px;
-            color: #666;
+            font-size: 12px; color: #666;
         }
 
         /* 浏览器内部样式 */
@@ -321,6 +342,10 @@ def desktop():
         <div class="desktop-icon" onclick="openWindow('notepad')">
             <img src="/static/desktop-notepad.ico" alt="记事本">
             <span>记事本</span>
+        </div>
+        <div class="desktop-icon" onclick="openWindow('tarkov')">
+            <img src="/static/desktop-EscapeFromTarkov.ico" alt="逃离塔科夫">
+            <span>逃离塔科夫</span>
         </div>
     </div>
 
@@ -404,6 +429,28 @@ def desktop():
         <div class="resize-handle top"></div><div class="resize-handle bottom"></div><div class="resize-handle left"></div><div class="resize-handle right"></div>
         <div class="resize-handle top-left"></div><div class="resize-handle top-right"></div><div class="resize-handle bottom-left"></div><div class="resize-handle bottom-right"></div>
     </div>
+    <!-- 逃离塔科夫窗口 -->
+    <div class="window" id="tarkov-window" style="width:400px; height:300px;">
+        <div class="window-titlebar">
+            <span class="window-title">逃离塔科夫</span>
+            <div class="window-controls">
+                <button onclick="closeWindow('tarkov')">✕</button>
+            </div>
+        </div>
+        <div class="window-content">
+            <div class="tarkov-loading" id="tarkov-loading">
+                <div class="tarkov-spinner"></div>
+                <div>正在加载...</div>
+            </div>
+            <div class="tarkov-warning" id="tarkov-warning">
+                <div class="icon">⚠️</div>
+                <div class="text">严重错误228<br>你不准逃离塔科夫！</div>
+                <button onclick="closeWindow('tarkov')">确认</button>
+            </div>
+        </div>
+        <div class="resize-handle top"></div><div class="resize-handle bottom"></div><div class="resize-handle left"></div><div class="resize-handle right"></div>
+        <div class="resize-handle top-left"></div><div class="resize-handle top-right"></div><div class="resize-handle bottom-left"></div><div class="resize-handle bottom-right"></div>
+    </div>
 
     <div class="taskbar">
         <button class="start-btn">
@@ -420,12 +467,14 @@ def desktop():
         let zIndexCounter = 500;
         let activeWindows = {};
         let currentFocus = null;
+        let tarkovTimer = null;
 
         const iconMap = {
             computer: '/static/desktop-mycomputer.ico',
             recycle: '/static/desktop-recyclebin.ico',
             browser: '/static/desktop-chrome.ico',
-            notepad: '/static/desktop-notepad.ico'
+            notepad: '/static/desktop-notepad.ico',
+            tarkov: '/static/desktop-EscapeFromTarkov.ico'
         };
 
         const VALID_URLS = [
@@ -433,6 +482,21 @@ def desktop():
             'https://www.terragroup.com',
             'www.terragroup.com'
         ];
+
+        function createTaskbarIcon(name) {
+            if (!activeWindows[name]) {
+                const taskIcon = document.createElement('div');
+                taskIcon.className = 'taskbar-icon';
+                taskIcon.title = name;
+                const img = document.createElement('img');
+                img.src = iconMap[name] || '/static/desktop-mycomputer.ico';
+                img.alt = name;
+                taskIcon.appendChild(img);
+                taskIcon.onclick = () => focusWindow(name);
+                document.getElementById('taskbar-icons').appendChild(taskIcon);
+                activeWindows[name] = taskIcon;
+            }
+        }
 
         function resetBrowser() {
             const view = document.getElementById('browser-view');
@@ -480,6 +544,33 @@ def desktop():
         }
 
         function openWindow(name) {
+            if (name === 'tarkov') {
+                const win = document.getElementById('tarkov-window');
+                if (!win) return;
+                if (win.style.display === 'flex') {
+                    focusWindow('tarkov');
+                    return;
+                }
+                const loadingDiv = document.getElementById('tarkov-loading');
+                const warningDiv = document.getElementById('tarkov-warning');
+                if (loadingDiv) loadingDiv.style.display = 'flex';
+                if (warningDiv) warningDiv.style.display = 'none';
+                win.style.display = 'flex';
+                win.style.zIndex = ++zIndexCounter;
+                if (!win.style.left || win.style.left === '') {
+                    win.style.left = (100 + Math.random() * 200) + 'px';
+                    win.style.top = (50 + Math.random() * 150) + 'px';
+                }
+                createTaskbarIcon('tarkov');
+                focusWindow('tarkov');
+                if (tarkovTimer) clearTimeout(tarkovTimer);
+                tarkovTimer = setTimeout(() => {
+                    if (loadingDiv) loadingDiv.style.display = 'none';
+                    if (warningDiv) warningDiv.style.display = 'flex';
+                }, 5000);   // 改为5秒
+                return;
+            }
+
             const win = document.getElementById(name + '-window');
             if (!win) return;
             if (win.style.display === 'flex') {
@@ -494,18 +585,7 @@ def desktop():
             }
             if (name === 'browser') resetBrowser();
 
-            if (!activeWindows[name]) {
-                const taskIcon = document.createElement('div');
-                taskIcon.className = 'taskbar-icon';
-                taskIcon.title = name;
-                const img = document.createElement('img');
-                img.src = iconMap[name] || '/static/desktop-mycomputer.ico';
-                img.alt = name;
-                taskIcon.appendChild(img);
-                taskIcon.onclick = () => focusWindow(name);
-                document.getElementById('taskbar-icons').appendChild(taskIcon);
-                activeWindows[name] = taskIcon;
-            }
+            createTaskbarIcon(name);
             focusWindow(name);
         }
 
@@ -537,6 +617,10 @@ def desktop():
             if (currentFocus === name) {
                 currentFocus = null;
                 updateTaskbarActive();
+            }
+            if (name === 'tarkov' && tarkovTimer) {
+                clearTimeout(tarkovTimer);
+                tarkovTimer = null;
             }
         }
 
