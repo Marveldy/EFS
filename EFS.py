@@ -166,10 +166,8 @@ def desktop():
         .desktop-icon span { font-size: 13px; text-align: center; }
         .taskbar {
             position: absolute; bottom: 0; left: 0; right: 0;
-            height: 48px;
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(10px);
-            display: flex;
+            height: 48px; background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(10px); display: flex;
             align-items: center; justify-content: space-between;
             color: #333; z-index: 1000;
             border-top: 1px solid rgba(0,0,0,0.1);
@@ -189,6 +187,11 @@ def desktop():
         }
         .taskbar-icon:hover { background: rgba(0,0,0,0.1); }
         .taskbar-icon img { width: 24px; height: 24px; }
+        .taskbar-icon.active {
+            background: rgba(0,0,0,0.1);
+            box-shadow: inset 0 0 0 2px rgba(0,102,204,0.6);
+            border-radius: 4px;
+        }
         .taskbar-right {
             display: flex; flex-direction: column; align-items: flex-end;
             justify-content: center; padding: 0 15px; font-size: 12px;
@@ -196,63 +199,140 @@ def desktop():
         }
         .taskbar-right .time { font-size: 14px; font-weight: 600; }
         .taskbar-right .date { font-size: 11px; opacity: 0.8; }
+
+        /* 窗口样式 */
         .window {
             position: absolute; width: 500px; height: 400px;
-            background: white; border-radius: 8px 8px 0 0;
+            background: white;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             display: none; flex-direction: column; overflow: hidden;
             min-width: 300px; min-height: 200px; z-index: 500;
+            border-radius: 0;
         }
         .window.active { z-index: 600; }
         .window-titlebar {
-            background: #333; color: white; padding: 8px 12px;
+            background: #ffffff;
+            color: #333;
+            padding: 8px 12px;
             display: flex; justify-content: space-between;
             align-items: center; cursor: move;
+            border-bottom: 1px solid #ddd;
         }
-        .window-title { font-size: 14px; }
+        .window-title { font-size: 14px; color: #333; }
         .window-controls { display: flex; gap: 8px; }
         .window-controls button {
-            background: none; border: none; color: white;
+            background: none; border: none; color: #333;
             font-size: 16px; cursor: pointer; width: 24px; height: 24px;
             border-radius: 4px; display: flex; align-items: center; justify-content: center;
         }
-        .window-controls button:hover { background: rgba(255,255,255,0.3); }
-        .window-content { flex: 1; overflow: hidden; }
-        iframe { width: 100%; height: 100%; border: none; }
+        .window-controls button:hover { background: rgba(0,0,0,0.1); }
+        .window-content {
+            flex: 1; overflow: hidden;
+            background: white;
+        }
+
+        /* 记事本样式 */
+        .notepad-menubar {
+            display: flex;
+            background: #f0f0f0;
+            border-bottom: 1px solid #ccc;
+            padding: 2px 0;
+        }
+        .notepad-menubar span {
+            padding: 4px 12px;
+            font-size: 13px;
+            cursor: default;
+        }
+        .notepad-menubar span:hover {
+            background: #d0d0d0;
+        }
+        .notepad-textarea {
+            flex: 1;
+            padding: 4px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+            border: none;
+            outline: none;
+            resize: none;
+            width: 100%;
+            height: 100%;
+            background: white;
+            color: #333;
+            cursor: text;
+            user-select: text;
+        }
+        .notepad-statusbar {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 10px;
+            background: #f0f0f0;
+            border-top: 1px solid #ccc;
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* 浏览器内部样式 */
+        .browser-toolbar {
+            display: flex; align-items: center; padding: 6px 10px;
+            background: #f1f3f4; border-bottom: 1px solid #ddd;
+        }
+        .browser-url {
+            flex: 1; padding: 6px 10px; border: 1px solid #ccc;
+            border-radius: 4px; font-size: 14px;
+        }
+        .browser-go-btn {
+            margin-left: 8px; padding: 6px 16px;
+            background: #0066cc; color: white; border: none;
+            border-radius: 4px; cursor: pointer; font-size: 14px;
+        }
+        .browser-view {
+            flex: 1; background: #fff;
+            display: flex; align-items: center; justify-content: center;
+        }
 
         /* 调整手柄 */
         .resize-handle {
             position: absolute; z-index: 10; background: transparent;
         }
-        .resize-handle.top    { top: -3px; left: 0; right: 0; height: 6px; cursor: n-resize; }
-        .resize-handle.bottom { bottom: -3px; left: 0; right: 0; height: 6px; cursor: s-resize; }
-        .resize-handle.left   { left: -3px; top: 0; bottom: 0; width: 6px; cursor: w-resize; }
-        .resize-handle.right  { right: -3px; top: 0; bottom: 0; width: 6px; cursor: e-resize; }
-        .resize-handle.top-left     { top: -3px; left: -3px; width: 14px; height: 14px; cursor: nw-resize; }
-        .resize-handle.top-right    { top: -3px; right: -3px; width: 14px; height: 14px; cursor: ne-resize; }
-        .resize-handle.bottom-left  { bottom: -3px; left: -3px; width: 14px; height: 14px; cursor: sw-resize; }
-        .resize-handle.bottom-right { bottom: -3px; right: -3px; width: 14px; height: 14px; cursor: se-resize; }
+        .resize-handle.top    { top: 0; left: 0; right: 0; height: 6px; cursor: n-resize; }
+        .resize-handle.bottom { bottom: 0; left: 0; right: 0; height: 6px; cursor: s-resize; }
+        .resize-handle.left   { left: 0; top: 0; bottom: 0; width: 6px; cursor: w-resize; }
+        .resize-handle.right  { right: 0; top: 0; bottom: 0; width: 6px; cursor: e-resize; }
+        .resize-handle.top-left     { top: 0; left: 0; width: 14px; height: 14px; cursor: nw-resize; }
+        .resize-handle.top-right    { top: 0; right: 0; width: 14px; height: 14px; cursor: ne-resize; }
+        .resize-handle.bottom-left  { bottom: 0; left: 0; width: 14px; height: 14px; cursor: sw-resize; }
+        .resize-handle.bottom-right { bottom: 0; right: 0; width: 14px; height: 14px; cursor: se-resize; }
     </style>
 </head>
 <body>
     <div class="desktop-icons">
         <div class="desktop-icon" onclick="openWindow('computer')">
-            <img src="/static/desktop-mycomputer.png" alt="此电脑">
+            <img src="/static/desktop-mycomputer.ico" alt="此电脑">
             <span>此电脑</span>
         </div>
         <div class="desktop-icon" onclick="openWindow('recycle')">
-            <img src="/static/desktop-recyclebin.png" alt="回收站">
+            <img src="/static/desktop-recyclebin.ico" alt="回收站">
             <span>回收站</span>
         </div>
         <div class="desktop-icon" onclick="openWindow('browser')">
-            <img src="/static/desktop-chrome.png" alt="浏览器">
+            <img src="/static/desktop-chrome.ico" alt="浏览器">
             <span>浏览器</span>
+        </div>
+        <div class="desktop-icon" onclick="openWindow('notepad')">
+            <img src="/static/desktop-notepad.ico" alt="记事本">
+            <span>记事本</span>
         </div>
     </div>
 
     <!-- 此电脑窗口 -->
     <div class="window" id="computer-window">
-        <div class="window-titlebar"><span class="window-title">此电脑</span><div class="window-controls"><button onclick="minimizeWindow('computer')">─</button><button onclick="closeWindow('computer')">✕</button></div></div>
+        <div class="window-titlebar">
+            <span class="window-title">此电脑</span>
+            <div class="window-controls">
+                <button onclick="minimizeWindow('computer')">─</button>
+                <button onclick="closeWindow('computer')">✕</button>
+            </div>
+        </div>
         <div class="window-content">
             <p style="padding:20px;">📁 本地磁盘 (C:)</p>
             <p style="padding:0 20px;">📁 文档</p>
@@ -263,15 +343,64 @@ def desktop():
     </div>
     <!-- 回收站窗口 -->
     <div class="window" id="recycle-window">
-        <div class="window-titlebar"><span class="window-title">回收站</span><div class="window-controls"><button onclick="minimizeWindow('recycle')">─</button><button onclick="closeWindow('recycle')">✕</button></div></div>
+        <div class="window-titlebar">
+            <span class="window-title">回收站</span>
+            <div class="window-controls">
+                <button onclick="minimizeWindow('recycle')">─</button>
+                <button onclick="closeWindow('recycle')">✕</button>
+            </div>
+        </div>
         <div class="window-content"><p style="padding:20px;color:#666;">回收站是空的。</p></div>
         <div class="resize-handle top"></div><div class="resize-handle bottom"></div><div class="resize-handle left"></div><div class="resize-handle right"></div>
         <div class="resize-handle top-left"></div><div class="resize-handle top-right"></div><div class="resize-handle bottom-left"></div><div class="resize-handle bottom-right"></div>
     </div>
     <!-- 浏览器窗口 -->
     <div class="window" id="browser-window" style="width:900px; height:600px;">
-        <div class="window-titlebar"><span class="window-title">浏览器 - Terra Group</span><div class="window-controls"><button onclick="minimizeWindow('browser')">─</button><button onclick="closeWindow('browser')">✕</button></div></div>
-        <div class="window-content"><iframe src="/home/"></iframe></div>
+        <div class="window-titlebar">
+            <span class="window-title">浏览器</span>
+            <div class="window-controls">
+                <button onclick="minimizeWindow('browser')">─</button>
+                <button onclick="closeWindow('browser')">✕</button>
+            </div>
+        </div>
+        <div class="window-content" style="display:flex; flex-direction:column;">
+            <div class="browser-toolbar">
+                <input type="text" class="browser-url" id="browser-url" placeholder="输入网址..." onkeypress="if(event.key==='Enter')navigateBrowser()">
+                <button class="browser-go-btn" onclick="navigateBrowser()">转到</button>
+            </div>
+            <div class="browser-view" id="browser-view">
+                <div style="text-align:center;color:#999;">
+                    <div style="font-size:48px;margin-bottom:20px;">🔍</div>
+                    <div style="font-size:16px;">请在地址栏输入网址以访问</div>
+                </div>
+            </div>
+        </div>
+        <div class="resize-handle top"></div><div class="resize-handle bottom"></div><div class="resize-handle left"></div><div class="resize-handle right"></div>
+        <div class="resize-handle top-left"></div><div class="resize-handle top-right"></div><div class="resize-handle bottom-left"></div><div class="resize-handle bottom-right"></div>
+    </div>
+    <!-- 记事本窗口 -->
+    <div class="window" id="notepad-window" style="width:600px; height:450px;">
+        <div class="window-titlebar">
+            <span class="window-title">记事本</span>
+            <div class="window-controls">
+                <button onclick="minimizeWindow('notepad')">─</button>
+                <button onclick="closeWindow('notepad')">✕</button>
+            </div>
+        </div>
+        <div class="window-content" style="display:flex; flex-direction:column;">
+            <div class="notepad-menubar">
+                <span>文件(F)</span>
+                <span>编辑(E)</span>
+                <span>格式(O)</span>
+                <span>查看(V)</span>
+                <span>帮助(H)</span>
+            </div>
+            <textarea class="notepad-textarea" readonly>http://www.terragroup.com</textarea>
+            <div class="notepad-statusbar">
+                <span>第1行, 第1列</span>
+                <span>100%</span>
+            </div>
+        </div>
         <div class="resize-handle top"></div><div class="resize-handle bottom"></div><div class="resize-handle left"></div><div class="resize-handle right"></div>
         <div class="resize-handle top-left"></div><div class="resize-handle top-right"></div><div class="resize-handle bottom-left"></div><div class="resize-handle bottom-right"></div>
     </div>
@@ -290,46 +419,125 @@ def desktop():
     <script>
         let zIndexCounter = 500;
         let activeWindows = {};
+        let currentFocus = null;
 
-        // 窗口图标映射
         const iconMap = {
-            computer: '/static/desktop-mycomputer.png',
-            recycle: '/static/desktop-recyclebin.png',
-            browser: '/static/desktop-chrome.png'
+            computer: '/static/desktop-mycomputer.ico',
+            recycle: '/static/desktop-recyclebin.ico',
+            browser: '/static/desktop-chrome.ico',
+            notepad: '/static/desktop-notepad.ico'
         };
+
+        const VALID_URLS = [
+            'http://www.terragroup.com',
+            'https://www.terragroup.com',
+            'www.terragroup.com'
+        ];
+
+        function resetBrowser() {
+            const view = document.getElementById('browser-view');
+            if (view) {
+                view.innerHTML = `
+                    <div style="text-align:center;color:#999;">
+                        <div style="font-size:48px;margin-bottom:20px;">🔍</div>
+                        <div style="font-size:16px;">请在地址栏输入网址以访问</div>
+                    </div>`;
+            }
+            const urlInput = document.getElementById('browser-url');
+            if (urlInput) urlInput.value = '';
+        }
+
+        function navigateBrowser() {
+            const urlInput = document.getElementById('browser-url');
+            const view = document.getElementById('browser-view');
+            if (!urlInput || !view) return;
+            const input = urlInput.value.trim();
+            if (VALID_URLS.includes(input)) {
+                window.open('/home/', '_blank');
+                view.innerHTML = `
+                    <div style="text-align:center;color:#0066cc;">
+                        <div style="font-size:48px;margin-bottom:20px;">🚀</div>
+                        <div style="font-size:16px;">正在跳转到 ${input} ...</div>
+                    </div>`;
+            } else {
+                view.innerHTML = `
+                    <div style="text-align:center;color:#c00;">
+                        <div style="font-size:48px;margin-bottom:20px;">⚠️</div>
+                        <div style="font-size:16px;">无法访问该网页</div>
+                        <div style="font-size:13px;color:#666;margin-top:10px;">请检查网址是否正确</div>
+                    </div>`;
+            }
+        }
+
+        function updateTaskbarActive() {
+            for (const [name, icon] of Object.entries(activeWindows)) {
+                if (name === currentFocus) {
+                    icon.classList.add('active');
+                } else {
+                    icon.classList.remove('active');
+                }
+            }
+        }
 
         function openWindow(name) {
             const win = document.getElementById(name + '-window');
             if (!win) return;
-            if (win.style.display === 'flex') { win.style.zIndex = ++zIndexCounter; return; }
-            win.style.display = 'flex'; win.style.zIndex = ++zIndexCounter;
-            win.style.left = (100 + Math.random() * 200) + 'px';
-            win.style.top = (50 + Math.random() * 150) + 'px';
+            if (win.style.display === 'flex') {
+                focusWindow(name);
+                return;
+            }
+            win.style.display = 'flex';
+            win.style.zIndex = ++zIndexCounter;
+            if (!win.style.left || win.style.left === '') {
+                win.style.left = (100 + Math.random() * 200) + 'px';
+                win.style.top = (50 + Math.random() * 150) + 'px';
+            }
+            if (name === 'browser') resetBrowser();
 
             if (!activeWindows[name]) {
                 const taskIcon = document.createElement('div');
                 taskIcon.className = 'taskbar-icon';
                 taskIcon.title = name;
-                // 使用对应图标替换📄
                 const img = document.createElement('img');
-                img.src = iconMap[name] || '/static/desktop-mycomputer.png';
+                img.src = iconMap[name] || '/static/desktop-mycomputer.ico';
                 img.alt = name;
                 taskIcon.appendChild(img);
                 taskIcon.onclick = () => focusWindow(name);
                 document.getElementById('taskbar-icons').appendChild(taskIcon);
                 activeWindows[name] = taskIcon;
             }
+            focusWindow(name);
         }
 
         function focusWindow(name) {
             const win = document.getElementById(name + '-window');
-            if (win && win.style.display === 'flex') win.style.zIndex = ++zIndexCounter;
+            if (win && win.style.display === 'flex') {
+                win.style.zIndex = ++zIndexCounter;
+            }
+            if (currentFocus !== name) {
+                currentFocus = name;
+                updateTaskbarActive();
+            }
         }
 
-        function minimizeWindow(name) { document.getElementById(name + '-window').style.display = 'none'; }
+        function minimizeWindow(name) {
+            document.getElementById(name + '-window').style.display = 'none';
+            if (currentFocus === name) {
+                currentFocus = null;
+                updateTaskbarActive();
+            }
+        }
+
         function closeWindow(name) {
             document.getElementById(name + '-window').style.display = 'none';
-            if (activeWindows[name]) { activeWindows[name].remove(); delete activeWindows[name]; }
+            if (activeWindows[name]) {
+                activeWindows[name].remove();
+                delete activeWindows[name];
+            }
+            if (currentFocus === name) {
+                currentFocus = null;
+                updateTaskbarActive();
+            }
         }
 
         // 拖动窗口
@@ -337,16 +545,25 @@ def desktop():
             const titlebar = win.querySelector('.window-titlebar');
             let offsetX, offsetY, isDragging = false;
             titlebar.addEventListener('mousedown', (e) => {
-                isDragging = true; win.style.zIndex = ++zIndexCounter;
-                offsetX = e.clientX - win.offsetLeft; offsetY = e.clientY - win.offsetTop;
+                isDragging = true;
+                const winId = win.id.replace('-window', '');
+                focusWindow(winId);
+                win.style.zIndex = ++zIndexCounter;
+                offsetX = e.clientX - win.offsetLeft;
+                offsetY = e.clientY - win.offsetTop;
                 document.addEventListener('mousemove', onMouseMove);
                 document.addEventListener('mouseup', onMouseUp);
             });
             function onMouseMove(e) { if (!isDragging) return; win.style.left = (e.clientX - offsetX) + 'px'; win.style.top = (e.clientY - offsetY) + 'px'; }
             function onMouseUp() { isDragging = false; document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); }
+            win.addEventListener('mousedown', (e) => {
+                if (e.target.closest('.resize-handle')) return;
+                const winId = win.id.replace('-window', '');
+                focusWindow(winId);
+            });
         });
 
-        // 全方位窗口大小调整
+        // 窗口大小调整
         document.querySelectorAll('.resize-handle').forEach(handle => {
             const win = handle.closest('.window');
             handle.addEventListener('mousedown', (e) => {
