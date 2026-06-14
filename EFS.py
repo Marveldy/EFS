@@ -19,6 +19,7 @@ def all_pages():
     yield '/news/2025-09-28/'
     yield '/news/2025-08-15/'
     yield '/news/2025-07-02/'
+    yield '/news-portal/'
 
 # ========== 游戏入口（网站首页） ==========
 @app.route('/')
@@ -200,7 +201,7 @@ def desktop():
         .taskbar-right .time { font-size: 14px; font-weight: 600; }
         .taskbar-right .date { font-size: 11px; opacity: 0.8; }
 
-        /* 窗口样式 */
+        /* 窗口 */
         .window {
             position: absolute; width: 500px; height: 400px;
             background: white;
@@ -211,8 +212,7 @@ def desktop():
         }
         .window.active { z-index: 600; }
         .window-titlebar {
-            background: #ffffff;
-            color: #333;
+            background: #ffffff; color: #333;
             padding: 8px 12px;
             display: flex; justify-content: space-between;
             align-items: center; cursor: move;
@@ -226,95 +226,53 @@ def desktop():
             border-radius: 4px; display: flex; align-items: center; justify-content: center;
         }
         .window-controls button:hover { background: rgba(0,0,0,0.1); }
-        .window-content {
-            flex: 1; overflow: hidden;
-            background: white;
-        }
+        .window-content { flex: 1; overflow: hidden; background: white; }
 
-        /* 逃离塔科夫加载/警告样式 */
-        .tarkov-loading {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 100%; gap: 20px;
+        /* 邮箱 */
+        .mail-layout { display: flex; height: 100%; }
+        .mail-sidebar { width: 150px; background: #f5f5f5; border-right: 1px solid #ddd; padding: 8px 0; }
+        .mail-folder { padding: 8px 16px; cursor: pointer; font-size: 14px; color: #333; }
+        .mail-folder:hover { background: #e0e0e0; }
+        .mail-folder.active { background: #d0e4ff; font-weight: 600; }
+        .mail-main { flex: 1; display: flex; flex-direction: row; }
+        .mail-list { width: 30%; overflow-y: auto; border-right: 1px solid #ddd; }
+        .mail-item { padding: 10px 16px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .mail-item:hover { background: #f0f0f0; }
+        .mail-item.active { background: #e6f0ff; }
+        .mail-item .subject { font-weight: 600; font-size: 14px; }
+        .mail-item .from { font-size: 12px; color: #666; margin-top: 2px; }
+        .mail-item .preview { font-size: 12px; color: #888; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .mail-preview {
+            flex: 1; padding: 16px; overflow-y: auto;
+            user-select: text;
         }
-        .tarkov-spinner {
-            width: 48px; height: 48px;
-            border: 5px solid #ddd;
-            border-top: 5px solid #0066cc;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        .tarkov-warning {
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-            height: 100%; gap: 20px;
-        }
+        .mail-preview .subject { font-size: 16px; font-weight: 700; margin-bottom: 8px; user-select: text; }
+        .mail-preview .meta { font-size: 12px; color: #888; margin-bottom: 12px; user-select: text; }
+        .mail-preview .body { font-size: 14px; color: #333; line-height: 1.6; user-select: text; }
+        .mail-preview .body strong { font-weight: bold; user-select: text; }
+
+        /* 其他程序 */
+        .tarkov-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 20px; }
+        .tarkov-spinner { width: 48px; height: 48px; border: 5px solid #ddd; border-top: 5px solid #0066cc; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .tarkov-warning { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 20px; }
         .tarkov-warning .icon { font-size: 48px; }
-        .tarkov-warning .text {
-            font-size: 20px; font-weight: bold; color: #c00;
-            text-align: center; line-height: 1.5;
-        }
-        .tarkov-warning button {
-            padding: 8px 24px; font-size: 16px; cursor: pointer;
-            background: #0066cc; color: white; border: none; border-radius: 4px;
-        }
+        .tarkov-warning .text { font-size: 20px; font-weight: bold; color: #c00; text-align: center; line-height: 1.5; }
+        .tarkov-warning button { padding: 8px 24px; font-size: 16px; cursor: pointer; background: #0066cc; color: white; border: none; border-radius: 4px; }
 
-        /* 记事本样式 */
-        .notepad-menubar {
-            display: flex;
-            background: #f0f0f0;
-            border-bottom: 1px solid #ccc;
-            padding: 2px 0;
-        }
-        .notepad-menubar span {
-            padding: 4px 12px;
-            font-size: 13px;
-            cursor: default;
-        }
+        .notepad-menubar { display: flex; background: #f0f0f0; border-bottom: 1px solid #ccc; padding: 2px 0; }
+        .notepad-menubar span { padding: 4px 12px; font-size: 13px; cursor: default; }
         .notepad-menubar span:hover { background: #d0d0d0; }
-        .notepad-textarea {
-            flex: 1;
-            padding: 4px;
-            font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 14px;
-            border: none; outline: none; resize: none;
-            width: 100%; height: 100%;
-            background: white; color: #333;
-            cursor: text; user-select: text;
-        }
-        .notepad-statusbar {
-            display: flex;
-            justify-content: space-between;
-            padding: 4px 10px;
-            background: #f0f0f0;
-            border-top: 1px solid #ccc;
-            font-size: 12px; color: #666;
-        }
+        .notepad-textarea { flex: 1; padding: 4px; font-family: 'Consolas', 'Courier New', monospace; font-size: 14px; border: none; outline: none; resize: none; width: 100%; height: 100%; background: white; color: #333; cursor: text; user-select: text; }
+        .notepad-statusbar { display: flex; justify-content: space-between; padding: 4px 10px; background: #f0f0f0; border-top: 1px solid #ccc; font-size: 12px; color: #666; }
 
-        /* 浏览器内部样式 */
-        .browser-toolbar {
-            display: flex; align-items: center; padding: 6px 10px;
-            background: #f1f3f4; border-bottom: 1px solid #ddd;
-        }
-        .browser-url {
-            flex: 1; padding: 6px 10px; border: 1px solid #ccc;
-            border-radius: 4px; font-size: 14px;
-        }
-        .browser-go-btn {
-            margin-left: 8px; padding: 6px 16px;
-            background: #0066cc; color: white; border: none;
-            border-radius: 4px; cursor: pointer; font-size: 14px;
-        }
-        .browser-view {
-            flex: 1; background: #fff;
-            display: flex; align-items: center; justify-content: center;
-        }
+        .browser-toolbar { display: flex; align-items: center; padding: 6px 10px; background: #f1f3f4; border-bottom: 1px solid #ddd; }
+        .browser-url { flex: 1; padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        .browser-go-btn { margin-left: 8px; padding: 6px 16px; background: #0066cc; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .browser-view { flex: 1; background: #fff; display: flex; align-items: center; justify-content: center; }
 
         /* 调整手柄 */
-        .resize-handle {
-            position: absolute; z-index: 10; background: transparent;
-        }
+        .resize-handle { position: absolute; z-index: 10; background: transparent; }
         .resize-handle.top    { top: 0; left: 0; right: 0; height: 6px; cursor: n-resize; }
         .resize-handle.bottom { bottom: 0; left: 0; right: 0; height: 6px; cursor: s-resize; }
         .resize-handle.left   { left: 0; top: 0; bottom: 0; width: 6px; cursor: w-resize; }
@@ -343,21 +301,19 @@ def desktop():
             <img src="/static/desktop-notepad.ico" alt="记事本">
             <span>记事本</span>
         </div>
+        <div class="desktop-icon" onclick="openWindow('mail')">
+            <img src="/static/desktop-mail.ico" alt="邮箱">
+            <span>邮箱</span>
+        </div>
         <div class="desktop-icon" onclick="openWindow('tarkov')">
             <img src="/static/desktop-EscapeFromTarkov.ico" alt="逃离塔科夫">
             <span>逃离塔科夫</span>
         </div>
     </div>
 
-    <!-- 此电脑窗口 -->
+    <!-- 此电脑 -->
     <div class="window" id="computer-window">
-        <div class="window-titlebar">
-            <span class="window-title">此电脑</span>
-            <div class="window-controls">
-                <button onclick="minimizeWindow('computer')">─</button>
-                <button onclick="closeWindow('computer')">✕</button>
-            </div>
-        </div>
+        <div class="window-titlebar"><span class="window-title">此电脑</span><div class="window-controls"><button onclick="minimizeWindow('computer')">─</button><button onclick="closeWindow('computer')">✕</button></div></div>
         <div class="window-content">
             <p style="padding:20px;">📁 本地磁盘 (C:)</p>
             <p style="padding:0 20px;">📁 文档</p>
@@ -366,28 +322,16 @@ def desktop():
         <div class="resize-handle top"></div><div class="resize-handle bottom"></div><div class="resize-handle left"></div><div class="resize-handle right"></div>
         <div class="resize-handle top-left"></div><div class="resize-handle top-right"></div><div class="resize-handle bottom-left"></div><div class="resize-handle bottom-right"></div>
     </div>
-    <!-- 回收站窗口 -->
+    <!-- 回收站 -->
     <div class="window" id="recycle-window">
-        <div class="window-titlebar">
-            <span class="window-title">回收站</span>
-            <div class="window-controls">
-                <button onclick="minimizeWindow('recycle')">─</button>
-                <button onclick="closeWindow('recycle')">✕</button>
-            </div>
-        </div>
+        <div class="window-titlebar"><span class="window-title">回收站</span><div class="window-controls"><button onclick="minimizeWindow('recycle')">─</button><button onclick="closeWindow('recycle')">✕</button></div></div>
         <div class="window-content"><p style="padding:20px;color:#666;">回收站是空的。</p></div>
         <div class="resize-handle top"></div><div class="resize-handle bottom"></div><div class="resize-handle left"></div><div class="resize-handle right"></div>
         <div class="resize-handle top-left"></div><div class="resize-handle top-right"></div><div class="resize-handle bottom-left"></div><div class="resize-handle bottom-right"></div>
     </div>
-    <!-- 浏览器窗口 -->
+    <!-- 浏览器 -->
     <div class="window" id="browser-window" style="width:900px; height:600px;">
-        <div class="window-titlebar">
-            <span class="window-title">浏览器</span>
-            <div class="window-controls">
-                <button onclick="minimizeWindow('browser')">─</button>
-                <button onclick="closeWindow('browser')">✕</button>
-            </div>
-        </div>
+        <div class="window-titlebar"><span class="window-title">浏览器</span><div class="window-controls"><button onclick="minimizeWindow('browser')">─</button><button onclick="closeWindow('browser')">✕</button></div></div>
         <div class="window-content" style="display:flex; flex-direction:column;">
             <div class="browser-toolbar">
                 <input type="text" class="browser-url" id="browser-url" placeholder="输入网址..." onkeypress="if(event.key==='Enter')navigateBrowser()">
@@ -403,40 +347,70 @@ def desktop():
         <div class="resize-handle top"></div><div class="resize-handle bottom"></div><div class="resize-handle left"></div><div class="resize-handle right"></div>
         <div class="resize-handle top-left"></div><div class="resize-handle top-right"></div><div class="resize-handle bottom-left"></div><div class="resize-handle bottom-right"></div>
     </div>
-    <!-- 记事本窗口 -->
+    <!-- 记事本 -->
     <div class="window" id="notepad-window" style="width:600px; height:450px;">
-        <div class="window-titlebar">
-            <span class="window-title">记事本</span>
-            <div class="window-controls">
-                <button onclick="minimizeWindow('notepad')">─</button>
-                <button onclick="closeWindow('notepad')">✕</button>
-            </div>
-        </div>
+        <div class="window-titlebar"><span class="window-title">记事本</span><div class="window-controls"><button onclick="minimizeWindow('notepad')">─</button><button onclick="closeWindow('notepad')">✕</button></div></div>
         <div class="window-content" style="display:flex; flex-direction:column;">
             <div class="notepad-menubar">
-                <span>文件(F)</span>
-                <span>编辑(E)</span>
-                <span>格式(O)</span>
-                <span>查看(V)</span>
-                <span>帮助(H)</span>
+                <span>文件(F)</span><span>编辑(E)</span><span>格式(O)</span><span>查看(V)</span><span>帮助(H)</span>
             </div>
-            <textarea class="notepad-textarea" readonly>http://www.terragroup.com</textarea>
+            <!-- 记事本内容新增网址 -->
+            <textarea class="notepad-textarea" readonly>http://www.terragroup.com
+www.toutiaoxinwen.com</textarea>
             <div class="notepad-statusbar">
-                <span>第1行, 第1列</span>
-                <span>100%</span>
+                <span>第1行, 第1列</span><span>100%</span>
             </div>
         </div>
         <div class="resize-handle top"></div><div class="resize-handle bottom"></div><div class="resize-handle left"></div><div class="resize-handle right"></div>
         <div class="resize-handle top-left"></div><div class="resize-handle top-right"></div><div class="resize-handle bottom-left"></div><div class="resize-handle bottom-right"></div>
     </div>
-    <!-- 逃离塔科夫窗口 -->
-    <div class="window" id="tarkov-window" style="width:400px; height:300px;">
-        <div class="window-titlebar">
-            <span class="window-title">逃离塔科夫</span>
-            <div class="window-controls">
-                <button onclick="closeWindow('tarkov')">✕</button>
+    <!-- 邮箱 -->
+    <div class="window" id="mail-window" style="width:1200px; height:800px;">
+        <div class="window-titlebar"><span class="window-title">邮箱 - Terra Mail</span><div class="window-controls"><button onclick="minimizeWindow('mail')">─</button><button onclick="closeWindow('mail')">✕</button></div></div>
+        <div class="window-content">
+            <div class="mail-layout">
+                <div class="mail-sidebar">
+                    <div class="mail-folder active">收件箱</div>
+                    <div class="mail-folder">已发送</div>
+                    <div class="mail-folder">草稿箱</div>
+                    <div class="mail-folder">垃圾邮件</div>
+                </div>
+                <div class="mail-main">
+                    <div class="mail-list" id="mail-list">
+                        <div class="mail-item active" onclick="showMail('welcome')">
+                            <div class="subject">欢迎加入 Terra Group</div>
+                            <div class="from">Terra Group 人力资源部</div>
+                            <div class="preview">尊敬的员工，欢迎您加入泰拉集团...</div>
+                        </div>
+                        <div class="mail-item" onclick="showMail('security')">
+                            <div class="subject">⚠️ 安全警告：立即修改密码</div>
+                            <div class="from">Terra Group 信息安全中心</div>
+                            <div class="preview">我们发现您的账号存在异常登录活动...</div>
+                        </div>
+                    </div>
+                    <div class="mail-preview" id="mail-preview">
+                        <div class="subject">欢迎加入 Terra Group</div>
+                        <div class="meta">发件人：Terra Group 人力资源部 &lt;hr@terragroup.com&gt; | 2025年10月1日</div>
+                        <div class="body">
+                            尊敬的员工，<br><br>
+                            欢迎您正式加入 Terra Group 国际控股公司。我们致力于通过科学技术重塑世界，期待您为这一使命贡献力量。<br><br>
+                            您的初始登录凭据为：<br>
+                            用户名：employee001<br>
+                            密码：welcome123<br><br>
+                            请在首次登录后立即修改密码。如有疑问，请联系 IT 支持。<br><br>
+                            此致<br>
+                            Terra Group 人力资源部
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+        <div class="resize-handle top"></div><div class="resize-handle bottom"></div><div class="resize-handle left"></div><div class="resize-handle right"></div>
+        <div class="resize-handle top-left"></div><div class="resize-handle top-right"></div><div class="resize-handle bottom-left"></div><div class="resize-handle bottom-right"></div>
+    </div>
+    <!-- 逃离塔科夫 -->
+    <div class="window" id="tarkov-window" style="width:400px; height:300px;">
+        <div class="window-titlebar"><span class="window-title">逃离塔科夫</span><div class="window-controls"><button onclick="closeWindow('tarkov')">✕</button></div></div>
         <div class="window-content">
             <div class="tarkov-loading" id="tarkov-loading">
                 <div class="tarkov-spinner"></div>
@@ -452,10 +426,9 @@ def desktop():
         <div class="resize-handle top-left"></div><div class="resize-handle top-right"></div><div class="resize-handle bottom-left"></div><div class="resize-handle bottom-right"></div>
     </div>
 
+    <!-- 任务栏 -->
     <div class="taskbar">
-        <button class="start-btn">
-            <img src="/static/desktop-windows.png" alt="开始">
-        </button>
+        <button class="start-btn"><img src="/static/desktop-windows.png" alt="开始"></button>
         <div class="taskbar-icons" id="taskbar-icons"></div>
         <div class="taskbar-right">
             <div class="time" id="clock-time"></div>
@@ -474,14 +447,58 @@ def desktop():
             recycle: '/static/desktop-recyclebin.ico',
             browser: '/static/desktop-chrome.ico',
             notepad: '/static/desktop-notepad.ico',
+            mail: '/static/desktop-mail.ico',
             tarkov: '/static/desktop-EscapeFromTarkov.ico'
         };
 
+        // 有效网址列表（可根据需要扩展）
         const VALID_URLS = [
             'http://www.terragroup.com',
             'https://www.terragroup.com',
-            'www.terragroup.com'
+            'www.terragroup.com',
+            'http://www.toutiaoxinwen.com',
+            'https://www.toutiaoxinwen.com',
+            'www.toutiaoxinwen.com'
         ];
+
+        const mailData = {
+            welcome: {
+                subject: '欢迎加入 Terra Group',
+                from: 'Terra Group 人力资源部 <hr@terragroup.com>',
+                date: '2025年10月1日',
+                body: `尊敬的员工，<br><br>
+                    欢迎您正式加入 Terra Group 国际控股公司。我们致力于通过科学技术重塑世界，期待您为这一使命贡献力量。<br><br>
+                    您的初始登录凭据为：<br>
+                    用户名：employee001<br>
+                    密码：welcome123<br><br>
+                    请在首次登录后立即修改密码。如有疑问，请联系 IT 支持。<br><br>
+                    此致<br>
+                    Terra Group 人力资源部`
+            },
+            security: {
+                subject: '⚠️ 安全警告：立即修改密码',
+                from: 'Terra Group 信息安全中心 <security@terragroup.com>',
+                date: '2025年10月12日',
+                body: `您好，<br><br>
+                    我们检测到您的账号在诺文斯克地区存在异常登录活动。作为安全预防措施，请立即修改您的密码。<br><br>
+                    请访问内部系统 <strong style="user-select: text;">http://www.terragroup.com</strong> 并按照提示操作。如果您无法登录，请直接联系 IT 支持。<br><br>
+                    为了您的账户安全，此链接将在24小时后过期。<br><br>
+                    此致<br>
+                    Terra Group 信息安全中心`
+            }
+        };
+
+        function centerWindow(win) {
+            const taskbarHeight = 48;
+            const winWidth = win.offsetWidth;
+            const winHeight = win.offsetHeight;
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+            const left = Math.max(0, (screenWidth - winWidth) / 2);
+            const top = Math.max(0, (screenHeight - taskbarHeight - winHeight) / 2);
+            win.style.left = left + 'px';
+            win.style.top = top + 'px';
+        }
 
         function createTaskbarIcon(name) {
             if (!activeWindows[name]) {
@@ -500,46 +517,48 @@ def desktop():
 
         function resetBrowser() {
             const view = document.getElementById('browser-view');
-            if (view) {
-                view.innerHTML = `
-                    <div style="text-align:center;color:#999;">
-                        <div style="font-size:48px;margin-bottom:20px;">🔍</div>
-                        <div style="font-size:16px;">请在地址栏输入网址以访问</div>
-                    </div>`;
-            }
+            if (view) view.innerHTML = `<div style="text-align:center;color:#999;"><div style="font-size:48px;margin-bottom:20px;">🔍</div><div style="font-size:16px;">请在地址栏输入网址以访问</div></div>`;
             const urlInput = document.getElementById('browser-url');
             if (urlInput) urlInput.value = '';
         }
 
+        // 根据输入网址跳转对应页面
         function navigateBrowser() {
             const urlInput = document.getElementById('browser-url');
             const view = document.getElementById('browser-view');
             if (!urlInput || !view) return;
-            const input = urlInput.value.trim();
-            if (VALID_URLS.includes(input)) {
-                window.open('/home/', '_blank');
-                view.innerHTML = `
-                    <div style="text-align:center;color:#0066cc;">
-                        <div style="font-size:48px;margin-bottom:20px;">🚀</div>
-                        <div style="font-size:16px;">正在跳转到 ${input} ...</div>
-                    </div>`;
-            } else {
-                view.innerHTML = `
-                    <div style="text-align:center;color:#c00;">
-                        <div style="font-size:48px;margin-bottom:20px;">⚠️</div>
-                        <div style="font-size:16px;">无法访问该网页</div>
-                        <div style="font-size:13px;color:#666;margin-top:10px;">请检查网址是否正确</div>
-                    </div>`;
+            const input = urlInput.value.trim().toLowerCase();
+
+            if (!VALID_URLS.includes(input)) {
+                view.innerHTML = `<div style="text-align:center;color:#c00;"><div style="font-size:48px;margin-bottom:20px;">⚠️</div><div style="font-size:16px;">无法访问该网页</div><div style="font-size:13px;color:#666;margin-top:10px;">请检查网址是否正确</div></div>`;
+                return;
             }
+
+            let target = '/home/';
+            if (input.includes('toutiaoxinwen')) {
+                target = '/news-portal/';
+            }
+
+            window.open(target, '_blank');
+            view.innerHTML = `<div style="text-align:center;color:#0066cc;"><div style="font-size:48px;margin-bottom:20px;">🚀</div><div style="font-size:16px;">正在跳转到 ${input} ...</div></div>`;
+        }
+
+        function showMail(mailId) {
+            const data = mailData[mailId];
+            if (!data) return;
+            document.querySelectorAll('#mail-list .mail-item').forEach(item => item.classList.remove('active'));
+            const targetItem = document.querySelector(`#mail-list .mail-item[onclick="showMail('${mailId}')"]`);
+            if (targetItem) targetItem.classList.add('active');
+            document.getElementById('mail-preview').innerHTML = `
+                <div class="subject">${data.subject}</div>
+                <div class="meta">发件人：${data.from} | ${data.date}</div>
+                <div class="body">${data.body}</div>`;
         }
 
         function updateTaskbarActive() {
             for (const [name, icon] of Object.entries(activeWindows)) {
-                if (name === currentFocus) {
-                    icon.classList.add('active');
-                } else {
-                    icon.classList.remove('active');
-                }
+                if (name === currentFocus) icon.classList.add('active');
+                else icon.classList.remove('active');
             }
         }
 
@@ -547,51 +566,52 @@ def desktop():
             if (name === 'tarkov') {
                 const win = document.getElementById('tarkov-window');
                 if (!win) return;
-                if (win.style.display === 'flex') {
-                    focusWindow('tarkov');
+                if (win.style.display === 'flex') { focusWindow('tarkov'); return; }
+                if (win.style.display === 'none' && activeWindows[name]) {
+                    win.style.display = 'flex';
+                    win.style.zIndex = ++zIndexCounter;
+                    focusWindow(name);
                     return;
                 }
-                const loadingDiv = document.getElementById('tarkov-loading');
-                const warningDiv = document.getElementById('tarkov-warning');
-                if (loadingDiv) loadingDiv.style.display = 'flex';
-                if (warningDiv) warningDiv.style.display = 'none';
+                document.getElementById('tarkov-loading').style.display = 'flex';
+                document.getElementById('tarkov-warning').style.display = 'none';
                 win.style.display = 'flex';
                 win.style.zIndex = ++zIndexCounter;
-                if (!win.style.left || win.style.left === '') {
-                    win.style.left = (100 + Math.random() * 200) + 'px';
-                    win.style.top = (50 + Math.random() * 150) + 'px';
-                }
+                centerWindow(win);
                 createTaskbarIcon('tarkov');
                 focusWindow('tarkov');
                 if (tarkovTimer) clearTimeout(tarkovTimer);
                 tarkovTimer = setTimeout(() => {
-                    if (loadingDiv) loadingDiv.style.display = 'none';
-                    if (warningDiv) warningDiv.style.display = 'flex';
-                }, 5000);   // 改为5秒
+                    document.getElementById('tarkov-loading').style.display = 'none';
+                    document.getElementById('tarkov-warning').style.display = 'flex';
+                }, 5000);
                 return;
             }
 
             const win = document.getElementById(name + '-window');
             if (!win) return;
-            if (win.style.display === 'flex') {
+            if (win.style.display === 'flex') { focusWindow(name); return; }
+            if (win.style.display === 'none' && activeWindows[name]) {
+                win.style.display = 'flex';
+                win.style.zIndex = ++zIndexCounter;
                 focusWindow(name);
                 return;
             }
             win.style.display = 'flex';
             win.style.zIndex = ++zIndexCounter;
-            if (!win.style.left || win.style.left === '') {
-                win.style.left = (100 + Math.random() * 200) + 'px';
-                win.style.top = (50 + Math.random() * 150) + 'px';
-            }
+            centerWindow(win);
             if (name === 'browser') resetBrowser();
-
             createTaskbarIcon(name);
             focusWindow(name);
         }
 
         function focusWindow(name) {
             const win = document.getElementById(name + '-window');
-            if (win && win.style.display === 'flex') {
+            if (!win) return;
+            if (win.style.display === 'none') {
+                win.style.display = 'flex';
+                win.style.zIndex = ++zIndexCounter;
+            } else {
                 win.style.zIndex = ++zIndexCounter;
             }
             if (currentFocus !== name) {
@@ -610,21 +630,12 @@ def desktop():
 
         function closeWindow(name) {
             document.getElementById(name + '-window').style.display = 'none';
-            if (activeWindows[name]) {
-                activeWindows[name].remove();
-                delete activeWindows[name];
-            }
-            if (currentFocus === name) {
-                currentFocus = null;
-                updateTaskbarActive();
-            }
-            if (name === 'tarkov' && tarkovTimer) {
-                clearTimeout(tarkovTimer);
-                tarkovTimer = null;
-            }
+            if (activeWindows[name]) { activeWindows[name].remove(); delete activeWindows[name]; }
+            if (currentFocus === name) { currentFocus = null; updateTaskbarActive(); }
+            if (name === 'tarkov' && tarkovTimer) { clearTimeout(tarkovTimer); tarkovTimer = null; }
         }
 
-        // 拖动窗口
+        // 拖动
         document.querySelectorAll('.window').forEach(win => {
             const titlebar = win.querySelector('.window-titlebar');
             let offsetX, offsetY, isDragging = false;
@@ -647,44 +658,28 @@ def desktop():
             });
         });
 
-        // 窗口大小调整
+        // 调整大小
         document.querySelectorAll('.resize-handle').forEach(handle => {
             const win = handle.closest('.window');
             handle.addEventListener('mousedown', (e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                const startX = e.clientX;
-                const startY = e.clientY;
-                const startLeft = win.offsetLeft;
-                const startTop = win.offsetTop;
-                const startWidth = win.offsetWidth;
-                const startHeight = win.offsetHeight;
+                e.stopPropagation(); e.preventDefault();
+                const startX = e.clientX, startY = e.clientY;
+                const startLeft = win.offsetLeft, startTop = win.offsetTop;
+                const startWidth = win.offsetWidth, startHeight = win.offsetHeight;
                 const handleClass = handle.className;
-
                 function onResizeMove(e) {
-                    const dx = e.clientX - startX;
-                    const dy = e.clientY - startY;
-                    let newWidth = startWidth;
-                    let newHeight = startHeight;
-                    let newLeft = startLeft;
-                    let newTop = startTop;
-
-                    if (handleClass.includes('right'))  newWidth  = Math.max(300, startWidth + dx);
-                    if (handleClass.includes('left'))   { newWidth  = Math.max(300, startWidth - dx); newLeft = startLeft + dx; }
+                    const dx = e.clientX - startX, dy = e.clientY - startY;
+                    let newWidth = startWidth, newHeight = startHeight;
+                    let newLeft = startLeft, newTop = startTop;
+                    if (handleClass.includes('right')) newWidth = Math.max(300, startWidth + dx);
+                    if (handleClass.includes('left')) { newWidth = Math.max(300, startWidth - dx); newLeft = startLeft + dx; }
                     if (handleClass.includes('bottom')) newHeight = Math.max(200, startHeight + dy);
-                    if (handleClass.includes('top'))    { newHeight = Math.max(200, startHeight - dy); newTop = startTop + dy; }
-
-                    win.style.width = newWidth + 'px';
-                    win.style.height = newHeight + 'px';
+                    if (handleClass.includes('top')) { newHeight = Math.max(200, startHeight - dy); newTop = startTop + dy; }
+                    win.style.width = newWidth + 'px'; win.style.height = newHeight + 'px';
                     if (handleClass.includes('left') || handleClass.includes('right')) win.style.left = newLeft + 'px';
                     if (handleClass.includes('top') || handleClass.includes('bottom')) win.style.top = newTop + 'px';
                 }
-
-                function onResizeUp() {
-                    document.removeEventListener('mousemove', onResizeMove);
-                    document.removeEventListener('mouseup', onResizeUp);
-                }
-
+                function onResizeUp() { document.removeEventListener('mousemove', onResizeMove); document.removeEventListener('mouseup', onResizeUp); }
                 document.addEventListener('mousemove', onResizeMove);
                 document.addEventListener('mouseup', onResizeUp);
             });
@@ -2446,6 +2441,246 @@ def news_2025_07_02():
 
     <footer>
         <p>© 2026 Terra Group International. All rights reserved.</p>
+    </footer>
+</body>
+</html>
+    '''
+
+# ========== 头条新闻网 ==========
+@app.route('/news-portal/')
+def news_portal():
+    return '''
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>头条新闻网</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #f4f7fb;
+            font-family: 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', sans-serif;
+            color: #1a2a3a;
+        }
+        /* 顶部导航 */
+        .header {
+            background: #ffffff;
+            border-bottom: 1px solid #e0e7ef;
+            padding: 12px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #cc0000;
+            letter-spacing: 2px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        .nav-links a {
+            color: #4a5c6c;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover { color: #cc0000; }
+        /* 主内容区域 */
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        /* 头条新闻 */
+        .headline {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        .headline-main {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .headline-main img {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+        }
+        .headline-text {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            padding: 40px 24px 24px;
+            color: white;
+        }
+        .headline-text h2 {
+            font-size: 32px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+        .headline-text p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        .headline-side {
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .side-news {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .side-news h3 {
+            font-size: 18px;
+            margin-bottom: 6px;
+            color: #0b2b44;
+        }
+        .side-news p {
+            font-size: 14px;
+            color: #5e6f82;
+        }
+        /* 新闻列表 */
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-left: 10px;
+            border-left: 4px solid #cc0000;
+        }
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        .news-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            transition: transform 0.2s;
+        }
+        .news-card:hover { transform: translateY(-4px); }
+        .news-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+        .news-card-content {
+            padding: 16px;
+        }
+        .news-card-content h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #0b2b44;
+        }
+        .news-card-content p {
+            font-size: 14px;
+            color: #5e6f82;
+            line-height: 1.5;
+        }
+        footer {
+            background: #fff;
+            border-top: 1px solid #e0e7ef;
+            text-align: center;
+            padding: 20px;
+            color: #8393a5;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">头条新闻网</div>
+        <div class="nav-links">
+            <a href="#">国际</a>
+            <a href="#">科技</a>
+            <a href="#">财经</a>
+            <a href="#">娱乐</a>
+            <a href="#">体育</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 头条新闻 -->
+        <div class="headline">
+            <div class="headline-main">
+                <!-- 示意图，实际可替换为你的图片 -->
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 400' fill='%23333'%3E%3Crect width='800' height='400' fill='%23444'/%3E%3Ctext x='50' y='220' font-size='24' fill='%23999'%3E头条新闻图片%3C/text%3E%3C/svg%3E" alt="头条">
+                <div class="headline-text">
+                    <h2>全球聚焦：2026 年科技峰会将在诺文斯克召开</h2>
+                    <p>国际科技巨头齐聚，探讨人工智能、量子计算等前沿议题。</p>
+                </div>
+            </div>
+            <div class="headline-side">
+                <div class="side-news">
+                    <h3>财经：全球股市震荡</h3>
+                    <p>受国际局势影响，多国主要指数出现波动...</p>
+                </div>
+                <div class="side-news">
+                    <h3>科技：新型电池突破</h3>
+                    <p>续航能力提升50%，电动车行业迎来变革...</p>
+                </div>
+                <div class="side-news">
+                    <h3>娱乐：年度大片定档</h3>
+                    <p>科幻巨制《星辰坠落》将于暑期上映...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 更多新闻 -->
+        <div class="section-title">最新新闻</div>
+        <div class="news-grid">
+            <div class="news-card">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200' fill='%23666'%3E%3Crect width='400' height='200' fill='%23666'/%3E%3Ctext x='30' y='110' fill='%23aaa' font-size='16'%3E新闻图片%3C/text%3E%3C/svg%3E" alt="">
+                <div class="news-card-content">
+                    <h3>诺文斯克经济特区建设加速</h3>
+                    <p>基础设施投资增加，多个大型项目提前完工。</p>
+                </div>
+            </div>
+            <div class="news-card">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200' fill='%23666'%3E%3Crect width='400' height='200' fill='%23666'/%3E%3Ctext x='30' y='110' fill='%23aaa' font-size='16'%3E新闻图片%3C/text%3E%3C/svg%3E" alt="">
+                <div class="news-card-content">
+                    <h3>泰拉集团发布新研究：基因编辑新突破</h3>
+                    <p>科学家成功培育出耐盐碱作物，有望缓解粮食危机。</p>
+                </div>
+            </div>
+            <div class="news-card">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200' fill='%23666'%3E%3Crect width='400' height='200' fill='%23666'/%3E%3Ctext x='30' y='110' fill='%23aaa' font-size='16'%3E新闻图片%3C/text%3E%3C/svg%3E" alt="">
+                <div class="news-card-content">
+                    <h3>太空探索：新望远镜传回首批图像</h3>
+                    <p>观测到距离地球120亿光年的星系，引学界轰动。</p>
+                </div>
+            </div>
+            <div class="news-card">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200' fill='%23666'%3E%3Crect width='400' height='200' fill='%23666'/%3E%3Ctext x='30' y='110' fill='%23aaa' font-size='16'%3E新闻图片%3C/text%3E%3C/svg%3E" alt="">
+                <div class="news-card-content">
+                    <h3>体育快讯：世界游泳锦标赛开幕</h3>
+                    <p>中国队首日斩获两金，破亚洲纪录。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 头条新闻网 | 传递最有价值的信息</p>
     </footer>
 </body>
 </html>
