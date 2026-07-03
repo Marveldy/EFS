@@ -20,6 +20,9 @@ def all_pages():
     yield '/news/2025-08-15/'
     yield '/news/2025-07-02/'
     yield '/news-portal/'
+    yield '/news-portal/medical-accident/'
+    yield '/news-portal/search/'
+    yield '/oracle/'
 
 # ========== 游戏入口（网站首页） ==========
 @app.route('/')
@@ -266,10 +269,57 @@ def desktop():
         .notepad-textarea { flex: 1; padding: 4px; font-family: 'Consolas', 'Courier New', monospace; font-size: 14px; border: none; outline: none; resize: none; width: 100%; height: 100%; background: white; color: #333; cursor: text; user-select: text; }
         .notepad-statusbar { display: flex; justify-content: space-between; padding: 4px 10px; background: #f0f0f0; border-top: 1px solid #ccc; font-size: 12px; color: #666; }
 
-        .browser-toolbar { display: flex; align-items: center; padding: 6px 10px; background: #f1f3f4; border-bottom: 1px solid #ddd; }
-        .browser-url { flex: 1; padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
-        .browser-go-btn { margin-left: 8px; padding: 6px 16px; background: #0066cc; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
-        .browser-view { flex: 1; background: #fff; display: flex; align-items: center; justify-content: center; }
+        /* 浏览器工具栏 - 放大并居中偏上 */
+        .browser-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 180px;
+            background: transparent;
+            border-bottom: none;
+        }
+        .browser-url-wrapper {
+            position: relative;
+            width: 80%;
+            max-width: 800px;
+        }
+        .browser-url {
+            width: 100%;
+            padding: 14px 50px 14px 24px;
+            border: 2px solid #ccc;
+            border-radius: 30px;
+            font-size: 18px;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        .browser-url:focus {
+            border-color: #0066cc;
+        }
+        .browser-go-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: #666;
+            padding: 8px;
+            border-radius: 50%;
+        }
+        .browser-go-btn:hover {
+            background: #e0e0e0;
+            color: #333;
+        }
+        .browser-view {
+            flex: 1;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
         /* 调整手柄 */
         .resize-handle { position: absolute; z-index: 10; background: transparent; }
@@ -334,8 +384,10 @@ def desktop():
         <div class="window-titlebar"><span class="window-title">浏览器</span><div class="window-controls"><button onclick="minimizeWindow('browser')">─</button><button onclick="closeWindow('browser')">✕</button></div></div>
         <div class="window-content" style="display:flex; flex-direction:column;">
             <div class="browser-toolbar">
-                <input type="text" class="browser-url" id="browser-url" placeholder="输入网址..." onkeypress="if(event.key==='Enter')navigateBrowser()">
-                <button class="browser-go-btn" onclick="navigateBrowser()">转到</button>
+                <div class="browser-url-wrapper">
+                    <input type="text" class="browser-url" id="browser-url" placeholder="输入网址..." onkeypress="if(event.key==='Enter')navigateBrowser()">
+                    <button class="browser-go-btn" onclick="navigateBrowser()" title="搜索网页">🔍</button>
+                </div>
             </div>
             <div class="browser-view" id="browser-view">
                 <div style="text-align:center;color:#999;">
@@ -354,7 +406,6 @@ def desktop():
             <div class="notepad-menubar">
                 <span>文件(F)</span><span>编辑(E)</span><span>格式(O)</span><span>查看(V)</span><span>帮助(H)</span>
             </div>
-            <!-- 记事本内容新增网址 -->
             <textarea class="notepad-textarea" readonly>http://www.terragroup.com
 www.toutiaoxinwen.com</textarea>
             <div class="notepad-statusbar">
@@ -441,6 +492,7 @@ www.toutiaoxinwen.com</textarea>
         let activeWindows = {};
         let currentFocus = null;
         let tarkovTimer = null;
+        let browserResetTimer = null;
 
         const iconMap = {
             computer: '/static/desktop-mycomputer.ico',
@@ -451,7 +503,6 @@ www.toutiaoxinwen.com</textarea>
             tarkov: '/static/desktop-EscapeFromTarkov.ico'
         };
 
-        // 有效网址列表（可根据需要扩展）
         const VALID_URLS = [
             'http://www.terragroup.com',
             'https://www.terragroup.com',
@@ -515,22 +566,46 @@ www.toutiaoxinwen.com</textarea>
             }
         }
 
-        function resetBrowser() {
+        // 重置浏览器视图，不清空地址栏
+        function resetBrowserView() {
             const view = document.getElementById('browser-view');
-            if (view) view.innerHTML = `<div style="text-align:center;color:#999;"><div style="font-size:48px;margin-bottom:20px;">🔍</div><div style="font-size:16px;">请在地址栏输入网址以访问</div></div>`;
+            if (view) {
+                view.innerHTML = `
+                    <div style="text-align:center;color:#999;">
+                        <div style="font-size:48px;margin-bottom:20px;">🔍</div>
+                        <div style="font-size:16px;">请在地址栏输入网址以访问</div>
+                    </div>`;
+            }
+        }
+
+        // 重置浏览器界面（打开窗口时调用，此时需要清空地址栏）
+        function fullResetBrowser() {
+            resetBrowserView();
             const urlInput = document.getElementById('browser-url');
             if (urlInput) urlInput.value = '';
         }
 
-        // 根据输入网址跳转对应页面
         function navigateBrowser() {
             const urlInput = document.getElementById('browser-url');
             const view = document.getElementById('browser-view');
             if (!urlInput || !view) return;
             const input = urlInput.value.trim().toLowerCase();
 
+            if (browserResetTimer) {
+                clearTimeout(browserResetTimer);
+                browserResetTimer = null;
+            }
+
             if (!VALID_URLS.includes(input)) {
-                view.innerHTML = `<div style="text-align:center;color:#c00;"><div style="font-size:48px;margin-bottom:20px;">⚠️</div><div style="font-size:16px;">无法访问该网页</div><div style="font-size:13px;color:#666;margin-top:10px;">请检查网址是否正确</div></div>`;
+                view.innerHTML = `
+                    <div style="text-align:center;color:#c00;">
+                        <div style="font-size:48px;margin-bottom:20px;">⚠️</div>
+                        <div style="font-size:16px;">无法访问该网页</div>
+                        <div style="font-size:13px;color:#666;margin-top:10px;">请检查网址是否正确</div>
+                    </div>`;
+                browserResetTimer = setTimeout(() => {
+                    resetBrowserView();
+                }, 5000);
                 return;
             }
 
@@ -540,7 +615,15 @@ www.toutiaoxinwen.com</textarea>
             }
 
             window.open(target, '_blank');
-            view.innerHTML = `<div style="text-align:center;color:#0066cc;"><div style="font-size:48px;margin-bottom:20px;">🚀</div><div style="font-size:16px;">正在跳转到 ${input} ...</div></div>`;
+            view.innerHTML = `
+                <div style="text-align:center;color:#0066cc;">
+                    <div style="font-size:48px;margin-bottom:20px;">🚀</div>
+                    <div style="font-size:16px;">正在跳转到 ${input} ...</div>
+                </div>`;
+
+            browserResetTimer = setTimeout(() => {
+                resetBrowserView();
+            }, 5000);
         }
 
         function showMail(mailId) {
@@ -600,7 +683,7 @@ www.toutiaoxinwen.com</textarea>
             win.style.display = 'flex';
             win.style.zIndex = ++zIndexCounter;
             centerWindow(win);
-            if (name === 'browser') resetBrowser();
+            if (name === 'browser') fullResetBrowser();   // 打开窗口时清空地址栏并重置视图
             createTaskbarIcon(name);
             focusWindow(name);
         }
@@ -633,6 +716,10 @@ www.toutiaoxinwen.com</textarea>
             if (activeWindows[name]) { activeWindows[name].remove(); delete activeWindows[name]; }
             if (currentFocus === name) { currentFocus = null; updateTaskbarActive(); }
             if (name === 'tarkov' && tarkovTimer) { clearTimeout(tarkovTimer); tarkovTimer = null; }
+            if (name === 'browser' && browserResetTimer) {
+                clearTimeout(browserResetTimer);
+                browserResetTimer = null;
+            }
         }
 
         // 拖动
@@ -2463,7 +2550,6 @@ def news_portal():
             font-family: 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', sans-serif;
             color: #1a2a3a;
         }
-        /* 顶部导航 */
         .header {
             background: #ffffff;
             border-bottom: 1px solid #e0e7ef;
@@ -2480,6 +2566,42 @@ def news_portal():
             font-weight: 700;
             color: #cc0000;
             letter-spacing: 2px;
+            margin-right: auto;
+        }
+        .search-area {
+            display: flex;
+            align-items: center;
+            margin-right: 40px;
+        }
+        .search-input {
+            width: 260px;                   /* 稍微加宽 */
+            padding: 10px 16px;             /* 加大内边距 */
+            border: 2px solid #cc0000;      /* 红色边框 */
+            border-radius: 20px 0 0 20px;
+            outline: none;
+            font-size: 15px;
+            transition: border-color 0.3s;
+            height: 44px;                   /* 固定高度，与按钮对齐 */
+        }
+        .search-input:focus {
+            border-color: #a30000;
+        }
+        .search-btn {
+            padding: 10px 20px;             /* 与输入框等高 */
+            background-color: #cc0000;
+            color: white;
+            border: 2px solid #cc0000;
+            border-left: none;
+            border-radius: 0 20px 20px 0;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            height: 44px;                   /* 固定高度对齐 */
+            box-sizing: border-box;
+        }
+        .search-btn:hover {
+            background-color: #a30000;
         }
         .nav-links {
             display: flex;
@@ -2493,13 +2615,11 @@ def news_portal():
             transition: color 0.3s;
         }
         .nav-links a:hover { color: #cc0000; }
-        /* 主内容区域 */
         .container {
             max-width: 1200px;
             margin: 30px auto;
             padding: 0 20px;
         }
-        /* 头条新闻 */
         .headline {
             display: flex;
             gap: 30px;
@@ -2556,7 +2676,6 @@ def news_portal():
             font-size: 14px;
             color: #5e6f82;
         }
-        /* 新闻列表 */
         .section-title {
             font-size: 24px;
             font-weight: 700;
@@ -2609,6 +2728,10 @@ def news_portal():
 <body>
     <div class="header">
         <div class="logo">头条新闻网</div>
+        <div class="search-area">
+            <input type="text" class="search-input" placeholder="搜索新闻..." id="searchInput" onkeypress="if(event.key==='Enter')performSearch()">
+            <button class="search-btn" onclick="performSearch()">搜索</button>
+        </div>
         <div class="nav-links">
             <a href="#">国际</a>
             <a href="#">科技</a>
@@ -2622,7 +2745,6 @@ def news_portal():
         <!-- 头条新闻 -->
         <div class="headline">
             <div class="headline-main">
-                <!-- 示意图，实际可替换为你的图片 -->
                 <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 400' fill='%23333'%3E%3Crect width='800' height='400' fill='%23444'/%3E%3Ctext x='50' y='220' font-size='24' fill='%23999'%3E头条新闻图片%3C/text%3E%3C/svg%3E" alt="头条">
                 <div class="headline-text">
                     <h2>全球聚焦：2026 年科技峰会将在诺文斯克召开</h2>
@@ -2645,9 +2767,16 @@ def news_portal():
             </div>
         </div>
 
-        <!-- 更多新闻 -->
+        <!-- 最新新闻 -->
         <div class="section-title">最新新闻</div>
         <div class="news-grid">
+            <div class="news-card">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200' fill='%23666'%3E%3Crect width='400' height='200' fill='%23666'/%3E%3Ctext x='30' y='110' fill='%23aaa' font-size='16'%3E新闻图片%3C/text%3E%3C/svg%3E" alt="">
+                <div class="news-card-content">
+                    <h3><a href="/news-portal/medical-accident/" style="color: inherit; text-decoration: none;">市中心医院发生严重医疗事故，多名患者受影响</a></h3>
+                    <p>昨日晚间，市中心医院因设备故障导致多名重症患者治疗中断，卫生部门已介入调查。</p>
+                </div>
+            </div>
             <div class="news-card">
                 <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200' fill='%23666'%3E%3Crect width='400' height='200' fill='%23666'/%3E%3Ctext x='30' y='110' fill='%23aaa' font-size='16'%3E新闻图片%3C/text%3E%3C/svg%3E" alt="">
                 <div class="news-card-content">
@@ -2682,8 +2811,1051 @@ def news_portal():
     <footer>
         <p>© 2026 头条新闻网 | 传递最有价值的信息</p>
     </footer>
+
+    <script>
+        function performSearch() {
+            const keyword = document.getElementById('searchInput').value.trim();
+            if (keyword) {
+                window.location.href = '/news-portal/search/?q=' + encodeURIComponent(keyword);
+            } else {
+                alert('请输入搜索关键词');
+            }
+        }
+    </script>
 </body>
 </html>
     '''
+
+
+# ========== 头条新闻网 - 医疗事故详情 ==========
+@app.route('/news-portal/medical-accident/')
+def news_medical_accident():
+    return '''
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>市中心医院发生严重医疗事故 | 头条新闻网</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #f4f7fb;
+            font-family: 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', sans-serif;
+            color: #1a2a3a;
+        }
+        .header {
+            background: #ffffff;
+            border-bottom: 1px solid #e0e7ef;
+            padding: 12px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #cc0000;
+            letter-spacing: 2px;
+            margin-right: auto;
+        }
+        .search-area {
+            display: flex;
+            align-items: center;
+            margin-right: 40px;
+        }
+        .search-input {
+            width: 260px;
+            padding: 10px 16px;
+            border: 2px solid #cc0000;
+            border-radius: 20px 0 0 20px;
+            outline: none;
+            font-size: 15px;
+            transition: border-color 0.3s;
+            height: 44px;
+        }
+        .search-input:focus {
+            border-color: #a30000;
+        }
+        .search-btn {
+            padding: 10px 20px;
+            background-color: #cc0000;
+            color: white;
+            border: 2px solid #cc0000;
+            border-left: none;
+            border-radius: 0 20px 20px 0;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            height: 44px;
+            box-sizing: border-box;
+        }
+        .search-btn:hover {
+            background-color: #a30000;
+        }
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        .nav-links a {
+            color: #4a5c6c;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover { color: #cc0000; }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            padding: 40px;
+        }
+        .article-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: #0b2b44;
+            margin-bottom: 16px;
+            line-height: 1.3;
+        }
+        .article-meta {
+            font-size: 14px;
+            color: #8393a5;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #e0e7ef;
+            padding-bottom: 15px;
+        }
+        .article-body {
+            font-size: 17px;
+            color: #333;
+            line-height: 1.8;
+        }
+        .article-body p {
+            margin-bottom: 20px;
+        }
+        .article-body strong {
+            color: #cc0000;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: #cc0000;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        footer {
+            background: #fff;
+            border-top: 1px solid #e0e7ef;
+            text-align: center;
+            padding: 20px;
+            color: #8393a5;
+            font-size: 13px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">头条新闻网</div>
+        <div class="search-area">
+            <input type="text" class="search-input" placeholder="搜索新闻..." id="searchInput" onkeypress="if(event.key==='Enter')performSearch()">
+            <button class="search-btn" onclick="performSearch()">搜索</button>
+        </div>
+        <div class="nav-links">
+            <a href="#">国际</a>
+            <a href="#">科技</a>
+            <a href="#">财经</a>
+            <a href="#">娱乐</a>
+            <a href="#">体育</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1 class="article-title">市中心医院发生严重医疗事故，多名患者受影响</h1>
+        <div class="article-meta">
+            <span>📅 2026年6月15日 22:30</span> | 
+            <span>来源：头条新闻网社会频道</span> | 
+            <span>记者：张明</span>
+        </div>
+        <div class="article-body">
+            <p><strong>本网讯</strong> 昨日晚间，市中心医院重症监护室（ICU）发生一起严重医疗事故，因关键生命支持设备突发故障，导致至少5名正在接受治疗的重症患者被迫中断救治。事故发生后，院方紧急启动应急预案，但仍有3名患者状况不稳定，已转至邻近医院继续治疗。卫生部门已成立专项调查组，连夜进驻医院展开全面调查。</p>
+
+            <p>据知情人士透露，故障设备为去年刚引进的“泰拉医疗科技”系列监护系统，该设备由<strong>泰拉集团</strong>下属子公司提供。事发时，设备突然黑屏，报警系统未能正常启动，值班医护人员虽立即进行人工干预，但仍造成了一段救治空窗期。</p>
+
+            <p>“当时所有监护仪同时死机，我们完全不知道病人的生命体征数据。”一名不愿透露姓名的护士向记者描述了当时的混乱场面。另一位患者家属情绪激动地表示：“医院和厂商必须给个说法，这不是拿人命开玩笑吗？”</p>
+
+            <p>泰拉医疗科技公司今早发布简短声明，称“对事件高度关注，已派遣技术团队协助调查”，但未就设备故障原因作出具体说明。值得注意的是，该公司近期在诺文斯克经济特区新落成的实验室正是专门从事医疗设备研发，而此次涉事的监护系统正是该实验室的首批产品之一。</p>
+
+            <p>截至发稿时，市中心医院ICU仍处于部分关闭状态，卫生部门表示将在一周内公布初步调查结果。本报将持续关注此事进展。</p>
+        </div>
+        <a href="/news-portal/" class="back-link">← 返回新闻网首页</a>
+    </div>
+
+    <footer>
+        <p>© 2026 头条新闻网 | 传递最有价值的信息</p>
+    </footer>
+
+    <script>
+        function performSearch() {
+            const keyword = document.getElementById('searchInput').value.trim();
+            if (keyword) {
+                window.location.href = '/news-portal/search/?q=' + encodeURIComponent(keyword);
+            } else {
+                alert('请输入搜索关键词');
+            }
+        }
+    </script>
+</body>
+</html>
+    '''
+
+# ========== 头条新闻网 - 搜索结果页 ==========
+@app.route('/news-portal/search/')
+def news_portal_search():
+    return '''
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搜索结果 | 头条新闻网</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #f4f7fb;
+            font-family: 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', sans-serif;
+            color: #1a2a3a;
+        }
+        .header {
+            background: #ffffff;
+            border-bottom: 1px solid #e0e7ef;
+            padding: 12px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #cc0000;
+            letter-spacing: 2px;
+            margin-right: auto;
+        }
+        .search-area {
+            display: flex;
+            align-items: center;
+            margin-right: 40px;
+        }
+        .search-input {
+            width: 260px;
+            padding: 10px 16px;
+            border: 2px solid #cc0000;
+            border-radius: 20px 0 0 20px;
+            outline: none;
+            font-size: 15px;
+            transition: border-color 0.3s;
+            height: 44px;
+        }
+        .search-input:focus {
+            border-color: #a30000;
+        }
+        .search-btn {
+            padding: 10px 20px;
+            background-color: #cc0000;
+            color: white;
+            border: 2px solid #cc0000;
+            border-left: none;
+            border-radius: 0 20px 20px 0;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            height: 44px;
+            box-sizing: border-box;
+        }
+        .search-btn:hover {
+            background-color: #a30000;
+        }
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        .nav-links a {
+            color: #4a5c6c;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover { color: #cc0000; }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .search-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #0b2b44;
+        }
+        .result-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .result-item {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .result-item h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #0b2b44;
+        }
+        .result-item h3 a {
+            color: inherit;
+            text-decoration: none;
+        }
+        .result-item h3 a:hover {
+            color: #cc0000;
+        }
+        .result-item p {
+            font-size: 14px;
+            color: #5e6f82;
+            line-height: 1.5;
+        }
+        .no-result {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8393a5;
+        }
+        footer {
+            background: #fff;
+            border-top: 1px solid #e0e7ef;
+            text-align: center;
+            padding: 20px;
+            color: #8393a5;
+            font-size: 13px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">头条新闻网</div>
+        <div class="search-area">
+            <input type="text" class="search-input" placeholder="搜索新闻..." id="searchInput" onkeypress="if(event.key==='Enter')performSearch()">
+            <button class="search-btn" onclick="performSearch()">搜索</button>
+        </div>
+        <div class="nav-links">
+            <a href="#">国际</a>
+            <a href="#">科技</a>
+            <a href="#">财经</a>
+            <a href="#">娱乐</a>
+            <a href="#">体育</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="search-title" id="searchTitle"></div>
+        <div class="result-list" id="resultList"></div>
+        <div class="no-result" id="noResult" style="display:none;">
+            <p>😔 未找到相关新闻</p>
+            <p style="margin-top:10px;">请尝试其他关键词</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 头条新闻网 | 传递最有价值的信息</p>
+    </footer>
+
+    <script>
+        const keywordMap = {
+            '市中心医院': {
+                title: '市中心医院发生严重医疗事故，多名患者受影响',
+                summary: '昨日晚间，市中心医院因设备故障导致多名重症患者治疗中断，卫生部门已介入调查。',
+                url: '/news-portal/medical-accident/'
+            }
+        };
+
+        function performSearch() {
+            const keyword = document.getElementById('searchInput').value.trim();
+            if (keyword) {
+                window.location.href = '/news-portal/search/?q=' + encodeURIComponent(keyword);
+            } else {
+                alert('请输入搜索关键词');
+            }
+        }
+
+        function loadSearchResults() {
+            const params = new URLSearchParams(window.location.search);
+            const query = params.get('q') || '';
+            const searchTitle = document.getElementById('searchTitle');
+            const resultList = document.getElementById('resultList');
+            const noResult = document.getElementById('noResult');
+
+            searchTitle.textContent = query ? `搜索结果：“${query}”` : '请输入搜索关键词';
+
+            if (!query) {
+                noResult.style.display = 'block';
+                return;
+            }
+
+            const news = keywordMap[query];
+            if (news) {
+                resultList.innerHTML = `
+                    <div class="result-item">
+                        <h3><a href="${news.url}">${news.title}</a></h3>
+                        <p>${news.summary}</p>
+                    </div>`;
+                noResult.style.display = 'none';
+            } else {
+                resultList.innerHTML = '';
+                noResult.style.display = 'block';
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', loadSearchResults);
+    </script>
+</body>
+</html>
+    '''
+
+@app.route('/oracle/')
+def oracle():
+    return '''
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oracle · 地球仪</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #ffffff;
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+            background-position: center;
+            font-family: 'Segoe UI', 'PingFang SC', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+        #container {
+            position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 1;
+        }
+        .input-panel {
+            position: absolute; top: 30px; left: 30px;
+            display: flex; flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+            z-index: 20;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            padding: 10px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        }
+        .panel-logo {
+            width: 300px;
+            height: auto;
+            margin-bottom: 5px;
+        }
+        .search-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+        .search-input {
+            flex: 1;
+            min-width: 0;
+            padding: 8px 10px;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.9);
+            font-size: 14px; color: #333;
+            outline: none;
+        }
+        .search-input:focus {
+            border-color: rgba(0,0,0,0.2);
+            box-shadow: 0 0 0 2px rgba(0,102,204,0.15);
+        }
+        .confirm-btn {
+            padding: 8px 16px;
+            background: #0066cc; color: white;
+            border: none; border-radius: 8px;
+            cursor: pointer; font-size: 14px; font-weight: 500;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+        .confirm-btn:hover { background: #0052a3; }
+
+        .controls-panel {
+            position: absolute; bottom: 40px; right: 30px;
+            display: flex; gap: 12px; z-index: 20;
+        }
+        .control-btn {
+            width: 48px; height: 36px;
+            border-radius: 8px;
+            border: 1px solid rgba(0,0,0,0.15);
+            background: rgba(255,255,255,0.9);
+            cursor: pointer;
+            font-size: 18px;
+            display: flex; align-items: center; justify-content: center;
+            color: #333;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+            backdrop-filter: blur(5px);
+            outline: none;
+        }
+        .control-btn:hover {
+            background: rgba(0,0,0,0.05);
+            border-color: rgba(0,0,0,0.3);
+        }
+        .control-btn.active {
+            background: #0066cc; color: white;
+            border-color: #0066cc;
+        }
+        #playBtn span { position: relative; top: -1px; }
+        #pauseBtn { font-size: 22px; }
+        #pauseBtn span { position: relative; top: -3px; }
+
+        .back-btn {
+            position: absolute; bottom: 40px; right: 30px;
+            width: 48px; height: 36px;
+            border-radius: 8px;
+            border: 1px solid rgba(0,0,0,0.15);
+            background: rgba(255,255,255,0.9);
+            cursor: pointer;
+            font-size: 24px;
+            display: none; align-items: center; justify-content: center;
+            color: #333;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            z-index: 20;
+        }
+        .back-btn:hover { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.3); }
+        .back-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: rgba(255,255,255,0.6);
+        }
+
+        .line-segment {
+            position: absolute;
+            background: #cc0000;
+            pointer-events: none;
+            z-index: 25;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .line-segment.visible { opacity: 1; }
+        .line-slant { height: 2px; transform-origin: left center; }
+        .line-h { height: 2px; }
+
+        .info-box {
+            position: absolute;
+            padding: 20px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid rgba(0,0,0,0.08);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            font-size: 20px;
+            color: #333;
+            z-index: 26;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            max-width: 400px;
+            white-space: normal;
+            text-align: left;
+            line-height: 1.6;
+        }
+        .info-box.visible { opacity: 1; }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+
+    <div class="input-panel">
+        <img src="/static/oracle_logo.png" alt="Oracle Logo" class="panel-logo">
+        <div class="search-row">
+            <input type="text" id="searchInput" class="search-input" placeholder="输入地点，如：北京">
+            <button class="confirm-btn" id="confirmBtn">确认</button>
+        </div>
+    </div>
+
+    <div class="controls-panel" id="rotateControls">
+        <button class="control-btn active" id="playBtn" onclick="window.startRotation()"><span>▶︎</span></button>
+        <button class="control-btn" id="pauseBtn" onclick="window.stopRotation()"><span>⏸︎</span></button>
+    </div>
+    <button class="back-btn" id="backBtn" disabled>↩️</button>
+
+    <div class="line-segment line-slant" id="lineSlant"></div>
+    <div class="line-segment line-h" id="lineH"></div>
+    <div class="info-box" id="infoBox"></div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        const container = document.getElementById('container');
+        const scene = new THREE.Scene();
+        scene.background = null;
+
+        const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.set(0, 0, 8);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setClearColor(0x000000, 0);
+        container.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.rotateSpeed = 0.8;
+        controls.zoomSpeed = 1.2;
+        controls.enablePan = false;
+        controls.minDistance = 4;
+        controls.maxDistance = 15;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 0.08;
+
+        // 灯光
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1.6);
+        scene.add(ambientLight);
+        const sunLight = new THREE.DirectionalLight(0xffffff, 1.4);
+        sunLight.position.set(5, 3, 5);
+        scene.add(sunLight);
+        const fillLight = new THREE.DirectionalLight(0xffffff, 0.6);
+        fillLight.position.set(-5, 0, -5);
+        scene.add(fillLight);
+
+        // 地球
+        const geometry = new THREE.SphereGeometry(3, 64, 64);
+        const textureLoader = new THREE.TextureLoader();
+        const earthTextureUrl = '/static/oracle.jpg';
+        const material = new THREE.MeshStandardMaterial({
+            map: textureLoader.load(earthTextureUrl),
+            roughness: 0.6,
+            metalness: 0.0,
+            color: 0xffffff,
+        });
+        const earth = new THREE.Mesh(geometry, material);
+        scene.add(earth);
+
+        // 标记组
+        const markerGroup = new THREE.Group();
+        markerGroup.visible = false;
+        earth.add(markerGroup);
+
+        const markerCoreGeo = new THREE.SphereGeometry(0.025, 16, 16);
+        const markerCoreMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+        const markerCore = new THREE.Mesh(markerCoreGeo, markerCoreMat);
+        markerGroup.add(markerCore);
+
+        const glowGeo = new THREE.SphereGeometry(0.05, 16, 16);
+        const glowMat = new THREE.MeshBasicMaterial({
+            color: 0xff3333,
+            transparent: true,
+            opacity: 0.4,
+        });
+        const glowSphere = new THREE.Mesh(glowGeo, glowMat);
+        markerGroup.add(glowSphere);
+
+        // 动画循环
+        function animate() {
+            requestAnimationFrame(animate);
+            if (markerGroup.visible) {
+                const scale = 1 + Math.sin(Date.now() * 0.005) * 0.05;
+                glowSphere.scale.setScalar(scale);
+            }
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        });
+
+        // ===================== 交互元素 =====================
+        const searchInput = document.getElementById('searchInput');
+        const confirmBtn = document.getElementById('confirmBtn');
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const backBtn = document.getElementById('backBtn');
+        const rotateControls = document.getElementById('rotateControls');
+
+        const lineSlant = document.getElementById('lineSlant');
+        const lineH = document.getElementById('lineH');
+        const infoBox = document.getElementById('infoBox');
+
+        // 地点数据
+        const locationData = {
+            '北京': {
+                lat: 39.9,
+                lon: 116.4,
+                desc: '北京，中华人民共和国的首都，拥有三千多年的建城史。故宫、长城、天坛等世界遗产屹立于此，古老与现代在这里交融。'
+            },
+            '伦敦': {
+                lat: 51.5,
+                lon: -0.1,
+                desc: '伦敦，英国首都，全球金融中心之一。泰晤士河穿城而过，大本钟、伦敦塔桥和白金汉宫是这座城市的标志。'
+            },
+            '莫斯科': {
+                lat: 55.75,
+                lon: 37.6,
+                desc: '莫斯科，俄罗斯联邦首都，政治与经济中心。红场、克里姆林宫和圣瓦西里大教堂展现出浓厚的历史底蕴。'
+            },
+            '悉尼': {
+                lat: -33.9,
+                lon: 151.2,
+                desc: '悉尼，澳大利亚最大的城市，以悉尼歌剧院和海港大桥闻名于世。阳光、沙滩与多元文化构成了独特的城市魅力。'
+            }
+        };
+
+        // 经纬度 -> 局部坐标
+        function latLonToLocal(latDeg, lonDeg) {
+            const lat = latDeg * Math.PI / 180;
+            const lon = -lonDeg * Math.PI / 180;
+            const R = 3;
+            const y = R * Math.sin(lat);
+            const r = R * Math.cos(lat);
+            const x = r * Math.cos(lon);
+            const z = r * Math.sin(lon);
+            return new THREE.Vector3(x, y, z);
+        }
+
+        // 仅缩放距离（不改变视线方向）
+        function zoomToDistance(targetDistance, duration, callback) {
+            const startPos = camera.position.clone();
+            const origin = new THREE.Vector3(0, 0, 0);
+            const startDir = startPos.clone().normalize();
+            const startDist = startPos.length();
+            const startTime = performance.now();
+
+            function step(now) {
+                const elapsed = now - startTime;
+                const t = Math.min(elapsed / duration, 1.0);
+                const ease = 1 - Math.pow(1 - t, 3);
+                const currentDist = startDist + (targetDistance - startDist) * ease;
+                camera.position.copy(startDir.clone().multiplyScalar(currentDist));
+                controls.target.copy(origin);
+                controls.update();
+                if (t < 1) {
+                    requestAnimationFrame(step);
+                } else {
+                    camera.position.copy(startDir.clone().multiplyScalar(targetDistance));
+                    controls.target.copy(origin);
+                    if (callback) callback();
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
+        // 同步旋转+拉近
+        function animateToTarget(targetRotY, posLocal, finalDistance, duration, callback) {
+            const startRotY = earth.rotation.y;
+            const startCamPos = camera.position.clone();
+            const startTarget = controls.target.clone();
+            const startTime = performance.now();
+
+            const finalWorldPos = posLocal.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), targetRotY);
+            const finalNormal = finalWorldPos.clone().normalize();
+            const finalCamPos = finalWorldPos.clone().add(finalNormal.clone().multiplyScalar(finalDistance));
+
+            function step(now) {
+                const elapsed = now - startTime;
+                const t = Math.min(elapsed / duration, 1.0);
+                const ease = 1 - Math.pow(1 - t, 3);
+                earth.rotation.y = startRotY + (targetRotY - startRotY) * ease;
+
+                const currentWorld = posLocal.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), earth.rotation.y);
+                const normal = currentWorld.clone().normalize();
+                const currentCamPos = currentWorld.clone().add(normal.clone().multiplyScalar(finalDistance));
+                const currentTarget = currentWorld.clone();
+
+                camera.position.lerpVectors(startCamPos, currentCamPos, ease);
+                controls.target.lerpVectors(startTarget, currentTarget, ease);
+                controls.update();
+
+                if (t < 1) {
+                    requestAnimationFrame(step);
+                } else {
+                    earth.rotation.y = targetRotY;
+                    camera.position.copy(finalCamPos);
+                    controls.target.copy(finalWorldPos);
+                    if (callback) callback();
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
+        // 平移相机（向右平移）
+        function panCameraRight(offsetX, duration, callback) {
+            const startPos = camera.position.clone();
+            const startTarget = controls.target.clone();
+            const startTime = performance.now();
+
+            function step(now) {
+                const elapsed = now - startTime;
+                const t = Math.min(elapsed / duration, 1.0);
+                const ease = 1 - Math.pow(1 - t, 3);
+                camera.position.x = startPos.x + offsetX * ease;
+                controls.target.x = startTarget.x + offsetX * ease;
+                controls.update();
+                if (t < 1) {
+                    requestAnimationFrame(step);
+                } else {
+                    camera.position.x = startPos.x + offsetX;
+                    controls.target.x = startTarget.x + offsetX;
+                    if (callback) callback();
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
+        // 标记弹性入场
+        function animateMarkerEntry(callback) {
+            const startTime = performance.now();
+            function step(now) {
+                const elapsed = now - startTime;
+                const t = Math.min(elapsed / 500, 1.0);
+                const ease = 1 - Math.pow(1 - t, 3);
+                markerGroup.scale.setScalar(ease);
+                if (t < 1) {
+                    requestAnimationFrame(step);
+                } else {
+                    markerGroup.scale.setScalar(1.0);
+                    if (callback) callback();
+                }
+            }
+            markerGroup.scale.setScalar(0);
+            requestAnimationFrame(step);
+        }
+
+        // 复位视角
+        function resetView(duration, callback) {
+            const startPos = camera.position.clone();
+            const startTarget = controls.target.clone();
+            const startRotY = earth.rotation.y;
+            const endPos = new THREE.Vector3(0, 0, 8);
+            const endTarget = new THREE.Vector3(0, 0, 0);
+            const endRotY = 0;
+            const startTime = performance.now();
+
+            function step(now) {
+                const elapsed = now - startTime;
+                const t = Math.min(elapsed / duration, 1.0);
+                const ease = 1 - Math.pow(1 - t, 3);
+                camera.position.lerpVectors(startPos, endPos, ease);
+                controls.target.lerpVectors(startTarget, endTarget, ease);
+                earth.rotation.y = startRotY + (endRotY - startRotY) * ease;
+                controls.update();
+                if (t < 1) {
+                    requestAnimationFrame(step);
+                } else {
+                    camera.position.copy(endPos);
+                    controls.target.copy(endTarget);
+                    earth.rotation.y = endRotY;
+                    if (callback) callback();
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
+        // 显示折线与文字框
+        function showConnectorAndInfo() {
+            const worldPos = markerCore.getWorldPosition(new THREE.Vector3());
+            const screenPos = worldPos.clone().project(camera);
+            const sx = (screenPos.x * 0.5 + 0.5) * window.innerWidth;
+            const sy = (screenPos.y * -0.5 + 0.5) * window.innerHeight;
+
+            infoBox.style.display = 'block';
+            infoBox.style.visibility = 'hidden';
+            const boxHeight = infoBox.offsetHeight;
+            infoBox.style.visibility = '';
+
+            // 可调参数
+            const offsetX = 650;
+            const slantDx = 80;
+            const slantDy = 40;
+            const textVerticalOffset = 0;
+
+            const turnX = sx + slantDx;
+            const turnY = sy - slantDy;
+            const infoX = sx + offsetX;
+            const infoY = turnY - boxHeight / 2 + textVerticalOffset;
+
+            // 斜线
+            const dx = turnX - sx;
+            const dy = turnY - sy;
+            const slantLength = Math.sqrt(dx * dx + dy * dy);
+            const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+            lineSlant.style.left = sx + 'px';
+            lineSlant.style.top = sy + 'px';
+            lineSlant.style.width = slantLength + 'px';
+            lineSlant.style.transform = `rotate(${angle}deg)`;
+            lineSlant.style.display = 'block';
+            lineSlant.classList.add('visible');
+
+            // 水平线
+            lineH.style.left = turnX + 'px';
+            lineH.style.top = turnY + 'px';
+            lineH.style.width = (infoX - turnX) + 'px';
+            lineH.style.display = 'block';
+            lineH.classList.add('visible');
+
+            infoBox.style.left = infoX + 'px';
+            infoBox.style.top = infoY + 'px';
+            infoBox.style.display = 'block';
+            infoBox.classList.add('visible');
+        }
+
+        // 隐藏折线与文字框
+        function hideConnectorAndInfo() {
+            lineSlant.classList.remove('visible');
+            lineH.classList.remove('visible');
+            infoBox.classList.remove('visible');
+            setTimeout(() => {
+                if (!lineSlant.classList.contains('visible')) lineSlant.style.display = 'none';
+                if (!lineH.classList.contains('visible')) lineH.style.display = 'none';
+                if (!infoBox.classList.contains('visible')) infoBox.style.display = 'none';
+            }, 300);
+        }
+
+        // 执行定位的核心函数
+        function applyLocation(cityName) {
+            const data = locationData[cityName];
+            if (!data) return;
+
+            const posLocal = latLonToLocal(data.lat, data.lon);
+            const targetRotY = -Math.atan2(posLocal.x, posLocal.z);
+
+            markerGroup.position.copy(posLocal);
+            markerGroup.visible = false;
+
+            controls.autoRotate = false;
+            controls.enableRotate = false;
+            controls.enableZoom = false;
+            controls.minDistance = 0;
+            rotateControls.style.display = 'none';
+            backBtn.style.display = 'flex';
+            backBtn.disabled = true;
+
+            const finalZoom = 2.8;
+
+            hideConnectorAndInfo();
+            infoBox.textContent = data.desc;
+
+            zoomToDistance(8, 800, () => {
+                animateToTarget(targetRotY, posLocal, finalZoom, 1200, () => {
+                    markerGroup.visible = true;
+                    animateMarkerEntry(() => {
+                        panCameraRight(1, 800, () => {
+                            showConnectorAndInfo();
+                            setTimeout(() => {
+                                backBtn.disabled = false;
+                            }, 500);
+                        });
+                    });
+                });
+            });
+        }
+
+        // 确认按钮事件
+        confirmBtn.addEventListener('click', () => {
+            const query = searchInput.value.trim();
+            if (!query) {
+                alert('请输入地点名称');
+                return;
+            }
+            if (locationData[query]) {
+                applyLocation(query);
+            } else {
+                alert('请检查输入的内容！');
+            }
+        });
+
+        // 回车触发确认
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') confirmBtn.click();
+        });
+
+        // 返回按钮
+        backBtn.addEventListener('click', () => {
+            if (backBtn.disabled) return;
+            backBtn.disabled = true;
+
+            controls.enableRotate = true;
+            controls.enableZoom = true;
+            controls.minDistance = 4;
+            controls.autoRotate = true;
+            playBtn.classList.add('active');
+            pauseBtn.classList.remove('active');
+
+            markerGroup.visible = false;
+            hideConnectorAndInfo();
+
+            // 注意：这里不再立即显示 rotateControls，而是在动画完成后显示
+            resetView(1200, () => {
+                backBtn.style.display = 'none';
+                backBtn.disabled = false;
+                rotateControls.style.display = 'flex';  // 动画完成后才显示播放暂停按钮
+            });
+        });
+
+        window.startRotation = function() {
+            controls.autoRotate = true;
+            playBtn.classList.add('active');
+            pauseBtn.classList.remove('active');
+        };
+        window.stopRotation = function() {
+            controls.autoRotate = false;
+            pauseBtn.classList.add('active');
+            playBtn.classList.remove('active');
+        };
+    </script>
+</body>
+</html>
+    '''
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
