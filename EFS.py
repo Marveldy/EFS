@@ -269,59 +269,49 @@ def desktop():
         .notepad-textarea { flex: 1; padding: 4px; font-family: 'Consolas', 'Courier New', monospace; font-size: 14px; border: none; outline: none; resize: none; width: 100%; height: 100%; background: white; color: #333; cursor: text; user-select: text; }
         .notepad-statusbar { display: flex; justify-content: space-between; padding: 4px 10px; background: #f0f0f0; border-top: 1px solid #ccc; font-size: 12px; color: #666; }
 
-        /* 浏览器工具栏 - 放大并居中偏上 */
+        /* 浏览器工具栏 */
         .browser-toolbar {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 180px;
-            background: transparent;
-            border-bottom: none;
+            display: flex; align-items: center; justify-content: center;
+            height: 180px; background: transparent; border-bottom: none;
         }
-        .browser-url-wrapper {
-            position: relative;
-            width: 80%;
-            max-width: 800px;
-        }
+        .browser-url-wrapper { position: relative; width: 80%; max-width: 800px; }
         .browser-url {
-            width: 100%;
-            padding: 14px 50px 14px 24px;
-            border: 2px solid #ccc;
-            border-radius: 30px;
-            font-size: 18px;
-            outline: none;
-            box-sizing: border-box;
-            transition: border-color 0.3s;
+            width: 100%; padding: 14px 50px 14px 24px;
+            border: 2px solid #ccc; border-radius: 30px; font-size: 18px;
+            outline: none; box-sizing: border-box; transition: border-color 0.3s;
         }
-        .browser-url:focus {
-            border-color: #0066cc;
-        }
+        .browser-url:focus { border-color: #0066cc; }
         .browser-go-btn {
-            position: absolute;
-            right: 8px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            font-size: 22px;
-            cursor: pointer;
-            color: #666;
-            padding: 8px;
-            border-radius: 50%;
+            position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; font-size: 22px; cursor: pointer;
+            color: #666; padding: 8px; border-radius: 50%;
         }
-        .browser-go-btn:hover {
-            background: #e0e0e0;
-            color: #333;
-        }
-        .browser-view {
-            flex: 1;
-            background: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        .browser-go-btn:hover { background: #e0e0e0; color: #333; }
+        .browser-view { flex: 1; background: #fff; display: flex; align-items: center; justify-content: center; }
 
-        /* 调整手柄 */
+        /* 微信 */
+        .wechat-layout { display: flex; height: 100%; }
+        .wechat-sidebar { width: 200px; background: #2b2b2b; display: flex; flex-direction: column; }
+        .wechat-profile { padding: 20px; color: white; border-bottom: 1px solid #444; font-weight: bold; }
+        .wechat-contacts { flex: 1; overflow-y: auto; }
+        .wechat-contact {
+            padding: 15px 20px; color: #ccc; cursor: pointer;
+            border-bottom: 1px solid #333; display: flex; align-items: center; gap: 10px;
+        }
+        .wechat-contact:hover { background: #3a3a3a; }
+        .wechat-contact.active { background: #3a3a3a; }
+        .wechat-avatar {
+            width: 40px; height: 40px; border-radius: 4px;
+            background: #555; display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: bold;
+        }
+        .wechat-chat-area { flex: 1; display: flex; flex-direction: column; }
+        .wechat-chat-header { padding: 15px; background: #f5f5f5; border-bottom: 1px solid #ddd; font-weight: bold; }
+        .wechat-messages { flex: 1; padding: 20px; overflow-y: auto; background: #ececec; }
+        .wechat-input-area { padding: 10px; background: #f5f5f5; border-top: 1px solid #ddd; display: flex; gap: 10px; }
+        .wechat-input { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; outline: none; }
+        .wechat-send-btn { padding: 8px 16px; background: #07c160; color: white; border: none; border-radius: 4px; cursor: pointer; }
+
         .resize-handle { position: absolute; z-index: 10; background: transparent; }
         .resize-handle.top    { top: 0; left: 0; right: 0; height: 6px; cursor: n-resize; }
         .resize-handle.bottom { bottom: 0; left: 0; right: 0; height: 6px; cursor: s-resize; }
@@ -335,30 +325,13 @@ def desktop():
 </head>
 <body>
     <div class="desktop-icons">
-        <div class="desktop-icon" onclick="openWindow('computer')">
-            <img src="/static/desktop-mycomputer.ico" alt="此电脑">
-            <span>此电脑</span>
-        </div>
-        <div class="desktop-icon" onclick="openWindow('recycle')">
-            <img src="/static/desktop-recyclebin.ico" alt="回收站">
-            <span>回收站</span>
-        </div>
-        <div class="desktop-icon" onclick="openWindow('browser')">
-            <img src="/static/desktop-chrome.ico" alt="浏览器">
-            <span>浏览器</span>
-        </div>
-        <div class="desktop-icon" onclick="openWindow('notepad')">
-            <img src="/static/desktop-notepad.ico" alt="记事本">
-            <span>记事本</span>
-        </div>
-        <div class="desktop-icon" onclick="openWindow('mail')">
-            <img src="/static/desktop-mail.ico" alt="邮箱">
-            <span>邮箱</span>
-        </div>
-        <div class="desktop-icon" onclick="openWindow('tarkov')">
-            <img src="/static/desktop-EscapeFromTarkov.ico" alt="逃离塔科夫">
-            <span>逃离塔科夫</span>
-        </div>
+        <div class="desktop-icon" onclick="openWindow('computer')"><img src="/static/desktop-mycomputer.ico" alt="此电脑"><span>此电脑</span></div>
+        <div class="desktop-icon" onclick="openWindow('recycle')"><img src="/static/desktop-recyclebin.ico" alt="回收站"><span>回收站</span></div>
+        <div class="desktop-icon" onclick="openWindow('browser')"><img src="/static/desktop-chrome.ico" alt="浏览器"><span>浏览器</span></div>
+        <div class="desktop-icon" onclick="openWindow('notepad')"><img src="/static/desktop-notepad.ico" alt="记事本"><span>记事本</span></div>
+        <div class="desktop-icon" onclick="openWindow('mail')"><img src="/static/desktop-mail.ico" alt="邮箱"><span>邮箱</span></div>
+        <div class="desktop-icon" onclick="openWindow('wechat')"><img src="/static/wechat.png" alt="微信"><span>微信</span></div>
+        <div class="desktop-icon" onclick="openWindow('tarkov')"><img src="/static/desktop-EscapeFromTarkov.ico" alt="逃离塔科夫"><span>逃离塔科夫</span></div>
     </div>
 
     <!-- 此电脑 -->
@@ -390,10 +363,7 @@ def desktop():
                 </div>
             </div>
             <div class="browser-view" id="browser-view">
-                <div style="text-align:center;color:#999;">
-                    <div style="font-size:48px;margin-bottom:20px;">🔍</div>
-                    <div style="font-size:16px;">请在地址栏输入网址以访问</div>
-                </div>
+                <div style="text-align:center;color:#999;"><div style="font-size:48px;margin-bottom:20px;">🔍</div><div style="font-size:16px;">请在地址栏输入网址以访问</div></div>
             </div>
         </div>
         <div class="resize-handle top"></div><div class="resize-handle bottom"></div><div class="resize-handle left"></div><div class="resize-handle right"></div>
@@ -407,10 +377,9 @@ def desktop():
                 <span>文件(F)</span><span>编辑(E)</span><span>格式(O)</span><span>查看(V)</span><span>帮助(H)</span>
             </div>
             <textarea class="notepad-textarea" readonly>http://www.terragroup.com
-www.toutiaoxinwen.com</textarea>
-            <div class="notepad-statusbar">
-                <span>第1行, 第1列</span><span>100%</span>
-            </div>
+www.toutiaoxinwen.com
+www.oracle.com</textarea>
+            <div class="notepad-statusbar"><span>第1行, 第1列</span><span>100%</span></div>
         </div>
         <div class="resize-handle top"></div><div class="resize-handle bottom"></div><div class="resize-handle left"></div><div class="resize-handle right"></div>
         <div class="resize-handle top-left"></div><div class="resize-handle top-right"></div><div class="resize-handle bottom-left"></div><div class="resize-handle bottom-right"></div>
@@ -459,6 +428,45 @@ www.toutiaoxinwen.com</textarea>
         <div class="resize-handle top"></div><div class="resize-handle bottom"></div><div class="resize-handle left"></div><div class="resize-handle right"></div>
         <div class="resize-handle top-left"></div><div class="resize-handle top-right"></div><div class="resize-handle bottom-left"></div><div class="resize-handle bottom-right"></div>
     </div>
+    <!-- 微信 -->
+    <div class="window" id="wechat-window" style="width:800px; height:550px;">
+        <div class="window-titlebar"><span class="window-title">微信</span><div class="window-controls"><button onclick="minimizeWindow('wechat')">─</button><button onclick="closeWindow('wechat')">✕</button></div></div>
+        <div class="window-content">
+            <div class="wechat-layout">
+                <div class="wechat-sidebar">
+                    <div class="wechat-profile">张三</div>
+                    <div class="wechat-contacts">
+                        <div class="wechat-contact active">
+                            <div class="wechat-avatar">李</div>
+                            <span>李四</span>
+                        </div>
+                        <div class="wechat-contact">
+                            <div class="wechat-avatar">王</div>
+                            <span>王五</span>
+                        </div>
+                        <div class="wechat-contact">
+                            <div class="wechat-avatar">赵</div>
+                            <span>赵六</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="wechat-chat-area">
+                    <div class="wechat-chat-header">李四</div>
+                    <div class="wechat-messages">
+                        <div style="margin-bottom:10px;"><strong>李四：</strong>你好，这个项目进展如何？</div>
+                        <div style="margin-bottom:10px;"><strong>我：</strong>一切顺利，明天可以上线。</div>
+                        <div style="margin-bottom:10px;"><strong>李四：</strong>太好了，记得检查一下 Oracle 页面。</div>
+                    </div>
+                    <div class="wechat-input-area">
+                        <input type="text" class="wechat-input" placeholder="输入消息...">
+                        <button class="wechat-send-btn">发送</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="resize-handle top"></div><div class="resize-handle bottom"></div><div class="resize-handle left"></div><div class="resize-handle right"></div>
+        <div class="resize-handle top-left"></div><div class="resize-handle top-right"></div><div class="resize-handle bottom-left"></div><div class="resize-handle bottom-right"></div>
+    </div>
     <!-- 逃离塔科夫 -->
     <div class="window" id="tarkov-window" style="width:400px; height:300px;">
         <div class="window-titlebar"><span class="window-title">逃离塔科夫</span><div class="window-controls"><button onclick="closeWindow('tarkov')">✕</button></div></div>
@@ -500,6 +508,7 @@ www.toutiaoxinwen.com</textarea>
             browser: '/static/desktop-chrome.ico',
             notepad: '/static/desktop-notepad.ico',
             mail: '/static/desktop-mail.ico',
+            wechat: '/static/wechat.png',
             tarkov: '/static/desktop-EscapeFromTarkov.ico'
         };
 
@@ -509,7 +518,10 @@ www.toutiaoxinwen.com</textarea>
             'www.terragroup.com',
             'http://www.toutiaoxinwen.com',
             'https://www.toutiaoxinwen.com',
-            'www.toutiaoxinwen.com'
+            'www.toutiaoxinwen.com',
+            'http://www.oracle.com',
+            'https://www.oracle.com',
+            'www.oracle.com'
         ];
 
         const mailData = {
@@ -566,19 +578,11 @@ www.toutiaoxinwen.com</textarea>
             }
         }
 
-        // 重置浏览器视图，不清空地址栏
         function resetBrowserView() {
             const view = document.getElementById('browser-view');
-            if (view) {
-                view.innerHTML = `
-                    <div style="text-align:center;color:#999;">
-                        <div style="font-size:48px;margin-bottom:20px;">🔍</div>
-                        <div style="font-size:16px;">请在地址栏输入网址以访问</div>
-                    </div>`;
-            }
+            if (view) view.innerHTML = `<div style="text-align:center;color:#999;"><div style="font-size:48px;margin-bottom:20px;">🔍</div><div style="font-size:16px;">请在地址栏输入网址以访问</div></div>`;
         }
 
-        // 重置浏览器界面（打开窗口时调用，此时需要清空地址栏）
         function fullResetBrowser() {
             resetBrowserView();
             const urlInput = document.getElementById('browser-url');
@@ -590,40 +594,21 @@ www.toutiaoxinwen.com</textarea>
             const view = document.getElementById('browser-view');
             if (!urlInput || !view) return;
             const input = urlInput.value.trim().toLowerCase();
-
-            if (browserResetTimer) {
-                clearTimeout(browserResetTimer);
-                browserResetTimer = null;
-            }
+            if (browserResetTimer) { clearTimeout(browserResetTimer); browserResetTimer = null; }
 
             if (!VALID_URLS.includes(input)) {
-                view.innerHTML = `
-                    <div style="text-align:center;color:#c00;">
-                        <div style="font-size:48px;margin-bottom:20px;">⚠️</div>
-                        <div style="font-size:16px;">无法访问该网页</div>
-                        <div style="font-size:13px;color:#666;margin-top:10px;">请检查网址是否正确</div>
-                    </div>`;
-                browserResetTimer = setTimeout(() => {
-                    resetBrowserView();
-                }, 5000);
+                view.innerHTML = `<div style="text-align:center;color:#c00;"><div style="font-size:48px;margin-bottom:20px;">⚠️</div><div style="font-size:16px;">无法访问该网页</div><div style="font-size:13px;color:#666;margin-top:10px;">请检查网址是否正确</div></div>`;
+                browserResetTimer = setTimeout(() => resetBrowserView(), 5000);
                 return;
             }
 
             let target = '/home/';
-            if (input.includes('toutiaoxinwen')) {
-                target = '/news-portal/';
-            }
+            if (input.includes('toutiaoxinwen')) target = '/news-portal/';
+            else if (input.includes('oracle')) target = '/oracle/';
 
             window.open(target, '_blank');
-            view.innerHTML = `
-                <div style="text-align:center;color:#0066cc;">
-                    <div style="font-size:48px;margin-bottom:20px;">🚀</div>
-                    <div style="font-size:16px;">正在跳转到 ${input} ...</div>
-                </div>`;
-
-            browserResetTimer = setTimeout(() => {
-                resetBrowserView();
-            }, 5000);
+            view.innerHTML = `<div style="text-align:center;color:#0066cc;"><div style="font-size:48px;margin-bottom:20px;">🚀</div><div style="font-size:16px;">正在跳转到 ${input} ...</div></div>`;
+            browserResetTimer = setTimeout(() => resetBrowserView(), 5000);
         }
 
         function showMail(mailId) {
@@ -632,10 +617,7 @@ www.toutiaoxinwen.com</textarea>
             document.querySelectorAll('#mail-list .mail-item').forEach(item => item.classList.remove('active'));
             const targetItem = document.querySelector(`#mail-list .mail-item[onclick="showMail('${mailId}')"]`);
             if (targetItem) targetItem.classList.add('active');
-            document.getElementById('mail-preview').innerHTML = `
-                <div class="subject">${data.subject}</div>
-                <div class="meta">发件人：${data.from} | ${data.date}</div>
-                <div class="body">${data.body}</div>`;
+            document.getElementById('mail-preview').innerHTML = `<div class="subject">${data.subject}</div><div class="meta">发件人：${data.from} | ${data.date}</div><div class="body">${data.body}</div>`;
         }
 
         function updateTaskbarActive() {
@@ -650,19 +632,11 @@ www.toutiaoxinwen.com</textarea>
                 const win = document.getElementById('tarkov-window');
                 if (!win) return;
                 if (win.style.display === 'flex') { focusWindow('tarkov'); return; }
-                if (win.style.display === 'none' && activeWindows[name]) {
-                    win.style.display = 'flex';
-                    win.style.zIndex = ++zIndexCounter;
-                    focusWindow(name);
-                    return;
-                }
+                if (win.style.display === 'none' && activeWindows[name]) { win.style.display='flex'; win.style.zIndex=++zIndexCounter; focusWindow(name); return; }
                 document.getElementById('tarkov-loading').style.display = 'flex';
                 document.getElementById('tarkov-warning').style.display = 'none';
-                win.style.display = 'flex';
-                win.style.zIndex = ++zIndexCounter;
-                centerWindow(win);
-                createTaskbarIcon('tarkov');
-                focusWindow('tarkov');
+                win.style.display = 'flex'; win.style.zIndex = ++zIndexCounter;
+                centerWindow(win); createTaskbarIcon('tarkov'); focusWindow('tarkov');
                 if (tarkovTimer) clearTimeout(tarkovTimer);
                 tarkovTimer = setTimeout(() => {
                     document.getElementById('tarkov-loading').style.display = 'none';
@@ -674,16 +648,10 @@ www.toutiaoxinwen.com</textarea>
             const win = document.getElementById(name + '-window');
             if (!win) return;
             if (win.style.display === 'flex') { focusWindow(name); return; }
-            if (win.style.display === 'none' && activeWindows[name]) {
-                win.style.display = 'flex';
-                win.style.zIndex = ++zIndexCounter;
-                focusWindow(name);
-                return;
-            }
-            win.style.display = 'flex';
-            win.style.zIndex = ++zIndexCounter;
+            if (win.style.display === 'none' && activeWindows[name]) { win.style.display='flex'; win.style.zIndex=++zIndexCounter; focusWindow(name); return; }
+            win.style.display = 'flex'; win.style.zIndex = ++zIndexCounter;
             centerWindow(win);
-            if (name === 'browser') fullResetBrowser();   // 打开窗口时清空地址栏并重置视图
+            if (name === 'browser') fullResetBrowser();
             createTaskbarIcon(name);
             focusWindow(name);
         }
@@ -691,35 +659,19 @@ www.toutiaoxinwen.com</textarea>
         function focusWindow(name) {
             const win = document.getElementById(name + '-window');
             if (!win) return;
-            if (win.style.display === 'none') {
-                win.style.display = 'flex';
-                win.style.zIndex = ++zIndexCounter;
-            } else {
-                win.style.zIndex = ++zIndexCounter;
-            }
-            if (currentFocus !== name) {
-                currentFocus = name;
-                updateTaskbarActive();
-            }
+            if (win.style.display === 'none') { win.style.display = 'flex'; win.style.zIndex = ++zIndexCounter; }
+            else { win.style.zIndex = ++zIndexCounter; }
+            if (currentFocus !== name) { currentFocus = name; updateTaskbarActive(); }
         }
 
-        function minimizeWindow(name) {
-            document.getElementById(name + '-window').style.display = 'none';
-            if (currentFocus === name) {
-                currentFocus = null;
-                updateTaskbarActive();
-            }
-        }
+        function minimizeWindow(name) { document.getElementById(name + '-window').style.display = 'none'; if (currentFocus === name) { currentFocus = null; updateTaskbarActive(); } }
 
         function closeWindow(name) {
             document.getElementById(name + '-window').style.display = 'none';
             if (activeWindows[name]) { activeWindows[name].remove(); delete activeWindows[name]; }
             if (currentFocus === name) { currentFocus = null; updateTaskbarActive(); }
             if (name === 'tarkov' && tarkovTimer) { clearTimeout(tarkovTimer); tarkovTimer = null; }
-            if (name === 'browser' && browserResetTimer) {
-                clearTimeout(browserResetTimer);
-                browserResetTimer = null;
-            }
+            if (name === 'browser' && browserResetTimer) { clearTimeout(browserResetTimer); browserResetTimer = null; }
         }
 
         // 拖动
@@ -731,18 +683,13 @@ www.toutiaoxinwen.com</textarea>
                 const winId = win.id.replace('-window', '');
                 focusWindow(winId);
                 win.style.zIndex = ++zIndexCounter;
-                offsetX = e.clientX - win.offsetLeft;
-                offsetY = e.clientY - win.offsetTop;
+                offsetX = e.clientX - win.offsetLeft; offsetY = e.clientY - win.offsetTop;
                 document.addEventListener('mousemove', onMouseMove);
                 document.addEventListener('mouseup', onMouseUp);
             });
             function onMouseMove(e) { if (!isDragging) return; win.style.left = (e.clientX - offsetX) + 'px'; win.style.top = (e.clientY - offsetY) + 'px'; }
             function onMouseUp() { isDragging = false; document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); }
-            win.addEventListener('mousedown', (e) => {
-                if (e.target.closest('.resize-handle')) return;
-                const winId = win.id.replace('-window', '');
-                focusWindow(winId);
-            });
+            win.addEventListener('mousedown', (e) => { if (e.target.closest('.resize-handle')) return; const winId = win.id.replace('-window', ''); focusWindow(winId); });
         });
 
         // 调整大小
