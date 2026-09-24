@@ -33,12 +33,12 @@ def game_entry():
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>逃离石家庄 - 网页解谜游戏</title>
+    <title>逃离石家庄 · 网页解谜</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             width: 100vw; height: 100vh;
-            background: #0a0f0f;
+            background: #050510;
             font-family: 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', sans-serif;
             overflow: hidden;
             display: flex;
@@ -46,82 +46,82 @@ def game_entry():
             align-items: center;
             position: relative;
         }
-        .fog-container {
+        /* 星空背景 */
+        .stars-canvas {
             position: absolute; top: 0; left: 0;
             width: 100%; height: 100%;
-            background: radial-gradient(ellipse at 20% 50%, #1b2b2b 0%, #0a0f0f 70%);
             z-index: 0;
         }
-        .fog-layer {
-            position: absolute; top: 0; left: 0;
-            width: 200%; height: 200%;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" opacity="0.08"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter><rect width="800" height="600" filter="url(%23noise)"/></svg>');
-            animation: fogMove 60s linear infinite;
-            pointer-events: none;
-        }
-        @keyframes fogMove {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(-50%, -50%); }
-        }
+        /* 主卡片 */
         .main-card {
             position: relative; z-index: 10;
-            text-align: center; padding: 60px 50px;
-            background: rgba(10,15,15,0.75);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 24px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.7);
-            max-width: 600px; width: 90%;
+            text-align: center; padding: 50px 40px;
+            background: rgba(10,10,25,0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(100,180,255,0.15);
+            border-radius: 32px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 80px rgba(70,130,255,0.1);
+            max-width: 550px; width: 90%;
         }
-        .game-title {
-            font-size: clamp(42px, 10vw, 72px); font-weight: 900;
-            letter-spacing: 8px; color: #e6e9e8;
-            text-shadow: 0 0 20px rgba(100,180,160,0.5);
-            margin-bottom: 20px; line-height: 1.2;
+        /* Logo 图片 */
+        .logo-img {
+            display: block;
+            margin: 0 auto 35px;
+            max-width: 75%;
+            height: auto;
+            filter: drop-shadow(0 0 20px rgba(80,160,255,0.6));
+            animation: logoPulse 3s ease-in-out infinite;
         }
-        .subtitle {
-            font-size: 16px; letter-spacing: 10px;
-            color: #667a74; text-transform: uppercase;
-            margin-bottom: 40px;
+        @keyframes logoPulse {
+            0%, 100% { filter: drop-shadow(0 0 15px rgba(80,160,255,0.5)); }
+            50% { filter: drop-shadow(0 0 30px rgba(80,160,255,0.9)); }
         }
         .intro-text {
-            color: #a3b9b0; font-size: 17px; line-height: 1.8;
-            margin-bottom: 45px; max-width: 480px;
+            color: #b0c4de; font-size: 17px; line-height: 1.8;
+            margin-bottom: 40px; max-width: 450px;
             margin-left: auto; margin-right: auto;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
         .start-btn {
             display: inline-block; padding: 16px 48px;
-            background: transparent; border: 2px solid #4a8c7c;
-            color: #cfe6db; font-size: 20px; font-weight: 600;
-            letter-spacing: 5px; text-decoration: none;
-            border-radius: 4px; transition: all 0.3s ease;
-            cursor: pointer; position: relative; overflow: hidden;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            border: none;
+            color: #fff; font-size: 20px; font-weight: 700;
+            letter-spacing: 6px; text-decoration: none;
+            border-radius: 50px;
+            box-shadow: 0 8px 25px rgba(0,100,255,0.4);
+            transition: all 0.3s ease;
+            position: relative; overflow: hidden;
         }
         .start-btn:hover {
-            background: #4a8c7c; color: #fff;
-            box-shadow: 0 0 30px rgba(74,140,124,0.5);
-            border-color: #5faa97;
+            background: linear-gradient(135deg, #2a5298, #1e3c72);
+            box-shadow: 0 12px 35px rgba(0,140,255,0.6);
+            transform: translateY(-3px);
         }
-        .start-btn::before {
-            content: ''; position: absolute; top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
+        .start-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 10%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
-        .start-btn:hover::before { left: 100%; }
+        .start-btn:hover::after {
+            opacity: 1;
+        }
         .version {
-            position: absolute; bottom: 25px; right: 30px;
-            color: #3a514b; font-size: 13px;
+            position: absolute; bottom: 20px; right: 30px;
+            color: rgba(255,255,255,0.3); font-size: 13px;
             letter-spacing: 2px; z-index: 20;
         }
     </style>
 </head>
 <body>
-    <div class="fog-container"><div class="fog-layer"></div></div>
+    <!-- 星空背景用 canvas 绘制 -->
+    <canvas class="stars-canvas" id="starsCanvas"></canvas>
+
     <div class="main-card">
-        <h1 class="game-title">逃离石家庄</h1>
-        <div class="subtitle">ESCAPE FROM SHIJIAZHUANG</div>
+        <img src="/static/EFSlogo.png" alt="逃离石家庄" class="logo-img">
         <p class="intro-text">
             一通深夜的未接来电，一张泛黄的旧照片，<br>
             你的挚友在石家庄郊外失踪。<br>
@@ -133,6 +133,54 @@ def game_entry():
         <a href="/desktop/" class="start-btn">开 始 游 戏</a>
     </div>
     <div class="version">v1.0 · ARG</div>
+
+    <script>
+        // 星空粒子动画
+        const canvas = document.getElementById('starsCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        const stars = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // 生成星星
+        const starCount = 150;
+        for (let i = 0; i < starCount; i++) {
+            stars.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                r: Math.random() * 1.5 + 0.5,
+                alpha: Math.random(),
+                delta: (Math.random() - 0.5) * 0.02,
+                speed: Math.random() * 0.5 + 0.1
+            });
+        }
+
+        function drawStars() {
+            ctx.clearRect(0, 0, width, height);
+            stars.forEach(s => {
+                s.alpha += s.delta;
+                if (s.alpha <= 0.2 || s.alpha >= 1) s.delta *= -1;
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255,255,255,${s.alpha})`;
+                ctx.fill();
+                // 移动
+                s.y -= s.speed;
+                if (s.y < -5) {
+                    s.y = height + 5;
+                    s.x = Math.random() * width;
+                }
+            });
+            requestAnimationFrame(drawStars);
+        }
+        drawStars();
+    </script>
 </body>
 </html>
     '''
